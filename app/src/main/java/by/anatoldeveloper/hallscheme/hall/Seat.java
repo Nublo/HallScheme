@@ -1,7 +1,5 @@
 package by.anatoldeveloper.hallscheme.hall;
 
-import android.graphics.Color;
-
 /**
  * Created by Moneyman.ru on 28.10.2015.
  * Copyright Moneyman.ru
@@ -9,8 +7,10 @@ import android.graphics.Color;
 public interface Seat {
 
     int id();
-    Color color();
+    int color();
     String marker();
+    String selectedSeat();
     HallScheme.SeatStatus status();
+    void setStatus(HallScheme.SeatStatus status);
 
 }

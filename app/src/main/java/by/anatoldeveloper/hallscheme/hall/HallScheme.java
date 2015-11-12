@@ -8,8 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-
-import java.util.HashMap;
+import android.os.Build;
 
 import by.anatoldeveloper.hallscheme.R;
 import by.anatoldeveloper.hallscheme.view.ZoomableImageView;
@@ -33,22 +32,40 @@ public class HallScheme {
     public int mSelectedSeats, mSelectedPrice, mSelectedCharge;
     private Scene mScene;
     private ZoomableImageView image;
+    private SeatListener listener;
 
-    public HallScheme(ZoomableImageView image, Context context) {
+    public HallScheme(ZoomableImageView image, Seat[][] seats, Context context) {
         nullifyMap();
 
+        image.setClickListener(new ImageClickListener() {
+            @Override
+            public void onClick(Point p) {
+                p.x -= mScene.getLeftYOffset();
+                p.y -= mScene.getTopXOffset();
+                clickScheme(p);
+            }
+        });
+
         this.image = image;
+        this.seats = seats;
 
         robotoMedium = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Medium.ttf");
         sceneName = context.getString(R.string.scene);
 
-        mSchemeBackgroundColor = context.getColor(R.color.light_grey);
-        mUnavailableSeatColor = context.getColor(R.color.light_grey);
-        mChosenColor = context.getColor(R.color.orange);
-
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            mSchemeBackgroundColor = context.getResources().getColor(R.color.light_grey);
+            mUnavailableSeatColor = context.getResources().getColor(R.color.light_grey);
+            mChosenColor = context.getResources().getColor(R.color.orange);
+            mMarkerPaint = initTextPaint(context.getResources().getColor(R.color.black_gray));
+            mScenePaint = initTextPaint(context.getResources().getColor(R.color.black_gray));
+        } else {
+            mSchemeBackgroundColor = context.getColor(R.color.light_grey);
+            mUnavailableSeatColor = context.getColor(R.color.light_grey);
+            mChosenColor = context.getColor(R.color.orange);
+            mMarkerPaint = initTextPaint(context.getColor(R.color.black_gray));
+            mScenePaint = initTextPaint(context.getColor(R.color.black_gray));
+        }
         mTextPaint = initTextPaint(Color.WHITE);
-        mMarkerPaint = initTextPaint(context.getColor(R.color.black_gray));
-        mScenePaint = initTextPaint(context.getColor(R.color.black_gray));
         mScenePaint.setTextSize(35);
 
         mBackgroundPaint = new Paint();
@@ -59,6 +76,10 @@ public class HallScheme {
         seatWidth = 30;
         seatGap = 5;
         offset = 30;
+    }
+
+    public void setSeatListener(SeatListener listener) {
+        this.listener = listener;
     }
 
     private Paint initTextPaint(int color) {
@@ -72,46 +93,17 @@ public class HallScheme {
     }
 
     private void clickScheme(Point point) {
-        if (findZoneClick(point)) {
-            return;
-        }
         Point p = new Point(point.x - offset/2, point.y - offset/2);
         int row = p.x / (seatWidth + seatGap);
         int seat = p.y / (seatWidth + seatGap);
         if (canSeatPress(p, row, seat)) {
             Seat pressedSeat = seats[seat][row];
-            if (pressedSeat.status == SeatStatus.CHOSEN) {
+            if (pressedSeat.status() == SeatStatus.CHOSEN) {
                 notifySeatListener(pressedSeat);
-                pressedSeat.pressSeat();
+                pressedSeat.setStatus(pressedSeat.status().pressSeat());
                 image.setImageBitmap(getImageBitmap());
             }
         }
-    }
-
-    private boolean findZoneClick(Point p) {
-        for (Integer key : mZones.keySet()) {
-            Zone zone = mZones.get(key);
-            if (zone.leftTopX == null || mCategories.get(zone.categoryId) == null)
-                continue;
-            int topX = offset/2 + zone.leftTopX * (seatWidth + seatGap);
-            int topY = offset/2 + zone.leftTopY * (seatWidth + seatGap);
-            int bottomX = offset/2 + (zone.leftTopX + zone.width) * (seatWidth + seatGap);
-            int bottomY = offset/2 + (zone.leftTopY + zone.width) * (seatWidth + seatGap);
-            if (p.x >= topX && p.x <= bottomX &&
-                    p.y >= topY && p.y <= bottomY) {
-
-                    Category category = mCategories.get(zone.categoryId);
-                    int price = (int) category.price;
-                    int charge = (int) category.charge;
-                    mSelectedPrice += price;
-                    mSelectedCharge += charge;
-                    mSelectedSeats++;
-                    listener.clickZone(category.id);
-
-                return true;
-            }
-        }
-        return false;
     }
 
     public boolean canSeatPress(Point p, int row, int seat) {
@@ -123,7 +115,7 @@ public class HallScheme {
                 || p.y <= 0) {
             return false;
         }
-        return SeatStatus.canSeatBePressed(seats[seat][row].status);
+        return SeatStatus.canSeatBePressed(seats[seat][row].status());
     }
 
     private Bitmap getImageBitmap() {
@@ -137,22 +129,19 @@ public class HallScheme {
 
         for (int i = 0; i < mHeight; i++) {
             for (int j = 0; j < mWidth; j++) {
-                if (seats[i][j].status == SeatStatus.EMPTY)
+                if (seats[i][j].status() == SeatStatus.EMPTY)
                     continue;
-                if (seats[i][j].status == SeatStatus.INFO) {
-                    if (seats[i][j].marker == null) {
-                        findMarker(i, j);
-                    }
-                    drawTextCentred(tempCanvas, mMarkerPaint, seats[i][j].marker,
+                if (seats[i][j].status() == SeatStatus.INFO) {
+                    drawTextCentred(tempCanvas, mMarkerPaint, seats[i][j].marker(),
                             offset/2 + (seatWidth + seatGap) * j + seatWidth/2 + mScene.getLeftYOffset(),
                             offset/2 + (seatWidth + seatGap) * i + seatWidth/2 + mScene.getTopXOffset());
                     continue;
                 }
-                if (seats[i][j].status == SeatStatus.BUSY) {
+                if (seats[i][j].status() == SeatStatus.BUSY) {
                     mBackgroundPaint.setColor(mUnavailableSeatColor);
-                } else if (seats[i][j].status == SeatStatus.FREE) {
-                    mBackgroundPaint.setColor(getSeatColor(seats[i][j]));
-                } else if (seats[i][j].status == SeatStatus.CHOSEN) {
+                } else if (seats[i][j].status() == SeatStatus.FREE) {
+                    mBackgroundPaint.setColor(seats[i][j].color());
+                } else if (seats[i][j].status() == SeatStatus.CHOSEN) {
                     mBackgroundPaint.setColor(mChosenColor);
                 }
                 tempCanvas.drawRect(offset/2 + (seatWidth + seatGap) * j + mScene.getLeftYOffset(),
@@ -160,29 +149,12 @@ public class HallScheme {
                         offset/2 + (seatWidth + seatGap) * j + seatWidth + mScene.getLeftYOffset(),
                         offset/2 + (seatWidth + seatGap) * i + seatWidth + mScene.getTopXOffset(),
                         mBackgroundPaint);
-                if (seats[i][j].status == SeatStatus.CHOSEN) {
-                    drawTextCentred(tempCanvas, mTextPaint, seats[i][j].seatNum+"",
+                if (seats[i][j].status() == SeatStatus.CHOSEN) {
+                    drawTextCentred(tempCanvas, mTextPaint, seats[i][j].selectedSeat(),
                             offset/2 + (seatWidth + seatGap) * j + seatWidth/2 + mScene.getLeftYOffset(),
                             offset/2 + (seatWidth + seatGap) * i + seatWidth/2 + mScene.getTopXOffset());
                 }
             }
-        }
-
-        for(Integer key : mZones.keySet()) {
-            Zone zone = mZones.get(key);
-            if (zone.leftTopX == null)
-                continue;
-            Category cat = mCategories.get(zone.categoryId);
-            if (cat != null) {
-                mBackgroundPaint.setColor(cat.color);
-            } else {
-                mBackgroundPaint.setColor(mUnavailableSeatColor);
-            }
-            int topX = offset/2 + zone.leftTopX * (seatWidth + seatGap) + mScene.getLeftYOffset();
-            int topY = offset/2 + zone.leftTopY * (seatWidth + seatGap) + mScene.getTopXOffset();
-            int bottomX = offset/2 + (zone.leftTopX + zone.width) * (seatWidth + seatGap) + mScene.getLeftYOffset();
-            int bottomY = offset/2 + (zone.leftTopY + zone.height) * (seatWidth + seatGap) + mScene.getTopXOffset();
-            tempCanvas.drawRect(topX, topY, bottomX, bottomY, mBackgroundPaint);
         }
 
         drawScene(tempCanvas);
@@ -250,37 +222,13 @@ public class HallScheme {
     }
 
     public void notifySeatListener(Seat s) {
-        int price = (int) mCategories.get(s.cat).price;
-        int charge = (int) mCategories.get(s.cat).charge;
-        if (s.status == SeatStatus.FREE) {
-            mSelectedPrice += price;
-            mSelectedCharge += charge;
-            mSelectedSeats++;
-            listener.selectSeat(s.id);
+        if (s.status() == SeatStatus.FREE) {
+            if (listener != null)
+                listener.selectSeat(s.id());
         } else {
-            mSelectedPrice -= price;
-            mSelectedCharge -= charge;
-            mSelectedSeats--;
-            listener.unSelectSeat(s.id);
+            if (listener != null)
+                listener.unSelectSeat(s.id());
         }
-    }
-
-    public static class Seat {
-
-        public String line; // Ряд
-        public String seatNum; // Место
-        public String infoLabel;
-        private String marker;
-        public SeatStatus status;
-
-        public void pressSeat() {
-            if (status == SeatStatus.FREE) {
-                status = SeatStatus.CHOSEN;
-            } else if (status == SeatStatus.CHOSEN) {
-                status = SeatStatus.FREE;
-            }
-        }
-
     }
 
     public static class Scene {
@@ -290,22 +238,27 @@ public class HallScheme {
         public int dimensionSecond;
 
         public Scene(String scene, int width, int height) {
-            if (scene.equals("north")) {
-                position = ScenePosition.NORTH;
-                dimensionSecond = width * 12;
-            } else if (scene.equals("south")) {
-                position = ScenePosition.SOUTH;
-                dimensionSecond = width * 12;
-            } else if (scene.equals("east")) {
-                position = ScenePosition.EAST;
-                dimensionSecond = height * 12;
-            } else if (scene.equals("west")) {
-                position = ScenePosition.WEST;
-                dimensionSecond = height * 12;
-            } else {
-                position = ScenePosition.NONE;
-                dimension = 0;
-                dimensionSecond = 0;
+            switch (scene) {
+                case "north":
+                    position = ScenePosition.NORTH;
+                    dimensionSecond = width * 12;
+                    break;
+                case "south":
+                    position = ScenePosition.SOUTH;
+                    dimensionSecond = width * 12;
+                    break;
+                case "east":
+                    position = ScenePosition.EAST;
+                    dimensionSecond = height * 12;
+                    break;
+                case "west":
+                    position = ScenePosition.WEST;
+                    dimensionSecond = height * 12;
+                    break;
+                default:
+                    position = ScenePosition.NONE;
+                    dimension = 0;
+                    dimensionSecond = 0;
             }
         }
 
@@ -351,10 +304,14 @@ public class HallScheme {
             return (status == FREE || status == CHOSEN);
         }
 
-        public boolean isSeatHasRowAndColumn() {
-            return this == SeatStatus.FREE ||
-                    this == SeatStatus.BUSY || this == SeatStatus.CHOSEN;
+        public SeatStatus pressSeat() {
+            if (this == FREE)
+                return CHOSEN;
+            if (this == CHOSEN)
+                return FREE;
+            return this;
         }
+
     }
 
     private enum ScenePosition {

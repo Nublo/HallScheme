@@ -4,6 +4,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
@@ -12,6 +13,8 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
+
+import by.anatoldeveloper.hallscheme.hall.ImageClickListener;
 
 /**
  * Created by Nublo on 28.10.2015.
@@ -49,6 +52,8 @@ public class ZoomableImageView extends ImageView {
     private GestureDetector mGestureDetector;
     private boolean shouldOnMeasureBeCalled = true;
     private int onMeasure = 0;
+
+    private ImageClickListener listener;
 
     public ZoomableImageView(Context context, AttributeSet attr)
     {
@@ -139,6 +144,9 @@ public class ZoomableImageView extends ImageView {
                             performClick();
                         if (isClick) {
                             v.performClick();
+                            if (listener != null) {
+                                listener.onClick(new Point((int)((event.getX()-x)/m[0]), (int)((event.getY()-y)/m[0])));
+                            }
                         }
                         break;
 
@@ -152,6 +160,10 @@ public class ZoomableImageView extends ImageView {
             }
 
         });
+    }
+
+    public void setClickListener(ImageClickListener listener) {
+        this.listener = listener;
     }
 
     @Override
