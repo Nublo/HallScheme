@@ -35,6 +35,9 @@ public class HallScheme {
     private SeatListener listener;
 
     public HallScheme(ZoomableImageView image, Seat[][] seats, Context context) {
+        this.image = image;
+        this.seats = seats;
+        this.mScene = new Scene("", 0, 0);
         nullifyMap();
 
         image.setClickListener(new ImageClickListener() {
@@ -45,9 +48,6 @@ public class HallScheme {
                 clickScheme(p);
             }
         });
-
-        this.image = image;
-        this.seats = seats;
 
         robotoMedium = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Medium.ttf");
         sceneName = context.getString(R.string.scene);
@@ -76,6 +76,9 @@ public class HallScheme {
         seatWidth = 30;
         seatGap = 5;
         offset = 30;
+        mHeight = seats.length;
+        mWidth = seats[0].length;
+        image.setImageBitmap(getImageBitmap());
     }
 
     public void setSeatListener(SeatListener listener) {
@@ -98,11 +101,9 @@ public class HallScheme {
         int seat = p.y / (seatWidth + seatGap);
         if (canSeatPress(p, row, seat)) {
             Seat pressedSeat = seats[seat][row];
-            if (pressedSeat.status() == SeatStatus.CHOSEN) {
-                notifySeatListener(pressedSeat);
-                pressedSeat.setStatus(pressedSeat.status().pressSeat());
-                image.setImageBitmap(getImageBitmap());
-            }
+            notifySeatListener(pressedSeat);
+            pressedSeat.setStatus(pressedSeat.status().pressSeat());
+            image.setImageBitmap(getImageBitmap());
         }
     }
 
