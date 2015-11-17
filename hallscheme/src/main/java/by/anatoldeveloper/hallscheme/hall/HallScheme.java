@@ -10,8 +10,8 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
 
-import by.anatoldeveloper.hallscheme.R;
 import by.anatoldeveloper.hallscheme.view.ZoomableImageView;
+import by.anatoldeveloper.hallscheme.R;
 
 /**
  * Created by Nublo on 28.10.2015.

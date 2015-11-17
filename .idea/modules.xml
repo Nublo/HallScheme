@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/HallScheme.iml" filepath="$PROJECT_DIR$/HallScheme.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hallscheme/hallscheme.iml" filepath="$PROJECT_DIR$/hallscheme/hallscheme.iml" />
     </modules>
   </component>
 </project>

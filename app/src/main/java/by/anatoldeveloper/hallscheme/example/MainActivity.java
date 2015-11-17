@@ -1,4 +1,4 @@
-package by.anatoldeveloper.hallscheme;
+package by.anatoldeveloper.hallscheme.example;
 
 import android.graphics.Color;
 import android.os.Bundle;

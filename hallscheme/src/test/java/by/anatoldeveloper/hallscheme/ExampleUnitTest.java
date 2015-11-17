@@ -1,4 +1,4 @@
-package by.anatoldeveloper.example;
+package by.anatoldeveloper.hallscheme;
 
 import org.junit.Test;
 
