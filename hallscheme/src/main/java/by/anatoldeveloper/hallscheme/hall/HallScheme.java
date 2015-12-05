@@ -54,13 +54,13 @@ public class HallScheme {
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             mSchemeBackgroundColor = context.getResources().getColor(R.color.light_grey);
-            mUnavailableSeatColor = context.getResources().getColor(R.color.light_grey);
+            mUnavailableSeatColor = context.getResources().getColor(R.color.disabled_color);
             mChosenColor = context.getResources().getColor(R.color.orange);
             mMarkerPaint = initTextPaint(context.getResources().getColor(R.color.black_gray));
             mScenePaint = initTextPaint(context.getResources().getColor(R.color.black_gray));
         } else {
             mSchemeBackgroundColor = context.getColor(R.color.light_grey);
-            mUnavailableSeatColor = context.getColor(R.color.light_grey);
+            mUnavailableSeatColor = context.getColor(R.color.disabled_color);
             mChosenColor = context.getColor(R.color.orange);
             mMarkerPaint = initTextPaint(context.getColor(R.color.black_gray));
             mScenePaint = initTextPaint(context.getColor(R.color.black_gray));
@@ -78,6 +78,11 @@ public class HallScheme {
         offset = 30;
         mHeight = seats.length;
         mWidth = seats[0].length;
+        image.setImageBitmap(getImageBitmap());
+    }
+
+    public void setScenePosition(ScenePosition position) {
+        mScene.setScenePosition(position);
         image.setImageBitmap(getImageBitmap());
     }
 
@@ -234,9 +239,13 @@ public class HallScheme {
 
     public static class Scene {
 
-        public ScenePosition position;
+        private ScenePosition position;
         private int dimension = 90;
         public int dimensionSecond;
+
+        public void setScenePosition(ScenePosition position) {
+            position = this.position;
+        }
 
         public Scene(String scene, int width, int height) {
             switch (scene) {
@@ -313,10 +322,6 @@ public class HallScheme {
             return this;
         }
 
-    }
-
-    private enum ScenePosition {
-        NORTH, SOUTH, EAST, WEST, NONE
     }
 
     @Override

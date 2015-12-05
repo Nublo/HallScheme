@@ -1,85 +1,56 @@
 package by.anatoldeveloper.hallscheme.example;
 
-import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
-
-import by.anatoldeveloper.hallscheme.hall.HallScheme;
-import by.anatoldeveloper.hallscheme.hall.Seat;
-import by.anatoldeveloper.hallscheme.hall.SeatListener;
-import by.anatoldeveloper.hallscheme.view.ZoomableImageView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 public class MainActivity extends AppCompatActivity {
-
-    ZoomableImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        imageView = (ZoomableImageView) findViewById(R.id.zoomable_image);
-        Seat seats[][] = new Seat[10][10];
-        for (int i = 0; i < 10; i++)
-            for(int j = 0; j < 10; j++) {
-                SeatExample seat = new SeatExample();
-                seat.id = i * 10 + (j+1);
-                seat.selectedSeatMarker = String.valueOf(i+1);
-                seat.status = HallScheme.SeatStatus.FREE;
-                seats[i][j] = seat;
-            }
-        HallScheme scheme = new HallScheme(imageView, seats, this);
-        scheme.setSeatListener(new SeatListener() {
-
-            @Override
-            public void selectSeat(int id) {
-                Toast.makeText(MainActivity.this, "select seat " + id, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void unSelectSeat(int id) {
-                Toast.makeText(MainActivity.this, "unSelect seat " + id, Toast.LENGTH_SHORT).show();
-            }
-
-        });
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment, new ListFragment()).commit();
     }
 
-    public class SeatExample implements Seat {
+    public static class ListFragment extends Fragment {
 
-        int id;
-        String marker;
-        String selectedSeatMarker;
-        HallScheme.SeatStatus status;
+        private static final String[] halls = {"Basic hall scheme", "Scheme with scene"};
 
-        @Override
-        public int id() {
-            return id;
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.halls_fragment, container, false);
+            ListView hallListView = (ListView) rootView.findViewById(R.id.hall_examples);
+            ArrayAdapter<String> listAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, halls);
+            hallListView.setAdapter(listAdapter);
+
+            hallListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    switch (position) {
+                        case 0 :
+                            replaceFragmentAndAddToBackStack(new BasicSchemeFragment());
+                            break;
+                        default:
+                            replaceFragmentAndAddToBackStack(new SchemeWithScene());
+                            break;
+                    }
+                }
+            });
+            return rootView;
         }
 
-        @Override
-        public int color() {
-            return Color.RED;
-        }
-
-        @Override
-        public String marker() {
-            return marker;
-        }
-
-        @Override
-        public String selectedSeat() {
-            return selectedSeatMarker;
-        }
-
-        @Override
-        public HallScheme.SeatStatus status() {
-            return status;
-        }
-
-        @Override
-        public void setStatus(HallScheme.SeatStatus status) {
-            this.status = status;
+        public void replaceFragmentAndAddToBackStack(Fragment fragment) {
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.main_fragment, fragment)
+                    .addToBackStack(null)
+                    .commit();
         }
 
     }

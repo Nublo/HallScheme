@@ -4,8 +4,9 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <by.anatoldeveloper.hallscheme.view.ZoomableImageView
-        android:id="@+id/zoomable_image"
+
+    <FrameLayout
+        android:id="@+id/main_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
