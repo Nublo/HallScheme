@@ -12,6 +12,7 @@ import by.anatoldeveloper.hallscheme.hall.Seat;
 public class SeatExample implements Seat {
 
     int id;
+    int color = Color.RED;
     String marker;
     String selectedSeatMarker;
     HallScheme.SeatStatus status;
@@ -23,7 +24,7 @@ public class SeatExample implements Seat {
 
     @Override
     public int color() {
-        return Color.RED;
+        return color;
     }
 
     @Override

@@ -19,32 +19,31 @@ import by.anatoldeveloper.hallscheme.R;
  */
 public class HallScheme {
 
-    private int mWidth, mHeight;
+    private int width, height;
     private Seat[][] seats;
 
     private final Rect textBounds = new Rect();
-    private Paint mTextPaint, mBackgroundPaint, mMarkerPaint, mScenePaint;
+    private Paint textPaint, backgroundPaint, markerPaint, scenePaint;
     private int seatWidth, seatGap, offset;
-    private int mSchemeBackgroundColor, mUnavailableSeatColor, mChosenColor;
+    private int schemeBackgroundColor, unavailableSeatColor, chosenColor;
     private Typeface robotoMedium;
     private String sceneName;
 
-    public int mSelectedSeats, mSelectedPrice, mSelectedCharge;
-    private Scene mScene;
+    private Scene scene;
     private ZoomableImageView image;
     private SeatListener listener;
 
     public HallScheme(ZoomableImageView image, Seat[][] seats, Context context) {
         this.image = image;
         this.seats = seats;
-        this.mScene = new Scene("", 0, 0);
+        this.scene = new Scene(ScenePosition.NONE, 0, 0);
         nullifyMap();
 
         image.setClickListener(new ImageClickListener() {
             @Override
             public void onClick(Point p) {
-                p.x -= mScene.getLeftYOffset();
-                p.y -= mScene.getTopXOffset();
+                p.x -= scene.getLeftYOffset();
+                p.y -= scene.getTopXOffset();
                 clickScheme(p);
             }
         });
@@ -53,36 +52,41 @@ public class HallScheme {
         sceneName = context.getString(R.string.scene);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            mSchemeBackgroundColor = context.getResources().getColor(R.color.light_grey);
-            mUnavailableSeatColor = context.getResources().getColor(R.color.disabled_color);
-            mChosenColor = context.getResources().getColor(R.color.orange);
-            mMarkerPaint = initTextPaint(context.getResources().getColor(R.color.black_gray));
-            mScenePaint = initTextPaint(context.getResources().getColor(R.color.black_gray));
+            schemeBackgroundColor = context.getResources().getColor(R.color.light_grey);
+            unavailableSeatColor = context.getResources().getColor(R.color.disabled_color);
+            chosenColor = context.getResources().getColor(R.color.orange);
+            markerPaint = initTextPaint(context.getResources().getColor(R.color.black_gray));
+            scenePaint = initTextPaint(context.getResources().getColor(R.color.black_gray));
         } else {
-            mSchemeBackgroundColor = context.getColor(R.color.light_grey);
-            mUnavailableSeatColor = context.getColor(R.color.disabled_color);
-            mChosenColor = context.getColor(R.color.orange);
-            mMarkerPaint = initTextPaint(context.getColor(R.color.black_gray));
-            mScenePaint = initTextPaint(context.getColor(R.color.black_gray));
+            schemeBackgroundColor = context.getColor(R.color.light_grey);
+            unavailableSeatColor = context.getColor(R.color.disabled_color);
+            chosenColor = context.getColor(R.color.orange);
+            markerPaint = initTextPaint(context.getColor(R.color.black_gray));
+            scenePaint = initTextPaint(context.getColor(R.color.black_gray));
         }
-        mTextPaint = initTextPaint(Color.WHITE);
-        mScenePaint.setTextSize(35);
+        textPaint = initTextPaint(Color.WHITE);
+        scenePaint.setTextSize(35);
 
-        mBackgroundPaint = new Paint();
-        mBackgroundPaint.setStyle(Paint.Style.FILL);
-        mBackgroundPaint.setColor(mSchemeBackgroundColor);
-        mBackgroundPaint.setStrokeWidth(0);
+        backgroundPaint = new Paint();
+        backgroundPaint.setStyle(Paint.Style.FILL);
+        backgroundPaint.setColor(schemeBackgroundColor);
+        backgroundPaint.setStrokeWidth(0);
 
         seatWidth = 30;
         seatGap = 5;
         offset = 30;
-        mHeight = seats.length;
-        mWidth = seats[0].length;
+        height = seats.length;
+        width = seats[0].length;
         image.setImageBitmap(getImageBitmap());
     }
 
     public void setScenePosition(ScenePosition position) {
-        mScene.setScenePosition(position);
+        scene = new Scene(position, width, height);
+        image.setImageBitmap(getImageBitmap());
+    }
+
+    public void setSceneName(String name) {
+        sceneName = name;
         image.setImageBitmap(getImageBitmap());
     }
 
@@ -113,11 +117,11 @@ public class HallScheme {
     }
 
     public boolean canSeatPress(Point p, int row, int seat) {
-        if (row >= mWidth || (p.x % (seatWidth + seatGap) >= seatWidth)
+        if (row >= width || (p.x % (seatWidth + seatGap) >= seatWidth)
                 || p.x <= 0) {
             return false;
         }
-        if (seat >= mHeight || (p.y % (seatWidth + seatGap) >= seatWidth)
+        if (seat >= height || (p.y % (seatWidth + seatGap) >= seatWidth)
                 || p.y <= 0) {
             return false;
         }
@@ -125,40 +129,40 @@ public class HallScheme {
     }
 
     private Bitmap getImageBitmap() {
-        int bitmapHeight = mHeight * (seatWidth + seatGap) - seatGap + offset + mScene.getTopXOffset() + mScene.getBottomXOffset();
-        int bitmapWidth = mWidth * (seatWidth + seatGap) - seatGap + offset + mScene.getLeftYOffset() + mScene.getRightYOffset();
+        int bitmapHeight = height * (seatWidth + seatGap) - seatGap + offset + scene.getTopXOffset() + scene.getBottomXOffset();
+        int bitmapWidth = width * (seatWidth + seatGap) - seatGap + offset + scene.getLeftYOffset() + scene.getRightYOffset();
 
         Bitmap tempBitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888);
         Canvas tempCanvas = new Canvas(tempBitmap);
-        mBackgroundPaint.setColor(mSchemeBackgroundColor);
-        tempCanvas.drawRect(0, 0, bitmapWidth, bitmapHeight, mBackgroundPaint);
+        backgroundPaint.setColor(schemeBackgroundColor);
+        tempCanvas.drawRect(0, 0, bitmapWidth, bitmapHeight, backgroundPaint);
 
-        for (int i = 0; i < mHeight; i++) {
-            for (int j = 0; j < mWidth; j++) {
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
                 if (seats[i][j].status() == SeatStatus.EMPTY)
                     continue;
                 if (seats[i][j].status() == SeatStatus.INFO) {
-                    drawTextCentred(tempCanvas, mMarkerPaint, seats[i][j].marker(),
-                            offset/2 + (seatWidth + seatGap) * j + seatWidth/2 + mScene.getLeftYOffset(),
-                            offset/2 + (seatWidth + seatGap) * i + seatWidth/2 + mScene.getTopXOffset());
+                    drawTextCentred(tempCanvas, markerPaint, seats[i][j].marker(),
+                            offset / 2 + (seatWidth + seatGap) * j + seatWidth / 2 + scene.getLeftYOffset(),
+                            offset / 2 + (seatWidth + seatGap) * i + seatWidth / 2 + scene.getTopXOffset());
                     continue;
                 }
                 if (seats[i][j].status() == SeatStatus.BUSY) {
-                    mBackgroundPaint.setColor(mUnavailableSeatColor);
+                    backgroundPaint.setColor(unavailableSeatColor);
                 } else if (seats[i][j].status() == SeatStatus.FREE) {
-                    mBackgroundPaint.setColor(seats[i][j].color());
+                    backgroundPaint.setColor(seats[i][j].color());
                 } else if (seats[i][j].status() == SeatStatus.CHOSEN) {
-                    mBackgroundPaint.setColor(mChosenColor);
+                    backgroundPaint.setColor(chosenColor);
                 }
-                tempCanvas.drawRect(offset/2 + (seatWidth + seatGap) * j + mScene.getLeftYOffset(),
-                        offset/2 + (seatWidth + seatGap) * i + mScene.getTopXOffset(),
-                        offset/2 + (seatWidth + seatGap) * j + seatWidth + mScene.getLeftYOffset(),
-                        offset/2 + (seatWidth + seatGap) * i + seatWidth + mScene.getTopXOffset(),
-                        mBackgroundPaint);
+                tempCanvas.drawRect(offset/2 + (seatWidth + seatGap) * j + scene.getLeftYOffset(),
+                        offset/2 + (seatWidth + seatGap) * i + scene.getTopXOffset(),
+                        offset/2 + (seatWidth + seatGap) * j + seatWidth + scene.getLeftYOffset(),
+                        offset/2 + (seatWidth + seatGap) * i + seatWidth + scene.getTopXOffset(),
+                        backgroundPaint);
                 if (seats[i][j].status() == SeatStatus.CHOSEN) {
-                    drawTextCentred(tempCanvas, mTextPaint, seats[i][j].selectedSeat(),
-                            offset/2 + (seatWidth + seatGap) * j + seatWidth/2 + mScene.getLeftYOffset(),
-                            offset/2 + (seatWidth + seatGap) * i + seatWidth/2 + mScene.getTopXOffset());
+                    drawTextCentred(tempCanvas, textPaint, seats[i][j].selectedSeat(),
+                            offset / 2 + (seatWidth + seatGap) * j + seatWidth / 2 + scene.getLeftYOffset(),
+                            offset / 2 + (seatWidth + seatGap) * i + seatWidth / 2 + scene.getTopXOffset());
                 }
             }
         }
@@ -169,47 +173,47 @@ public class HallScheme {
     }
 
     private void drawScene(Canvas canvas) {
-        if (mScene.position == ScenePosition.NONE) {
+        if (scene.position == ScenePosition.NONE) {
             return;
         }
-        mBackgroundPaint.setColor(mUnavailableSeatColor);
+        backgroundPaint.setColor(unavailableSeatColor);
         int topX=0, topY=0, bottomX=0, bottomY=0;
-        if (mScene.position == ScenePosition.NORTH) {
-            int totalWidth = mWidth * (seatWidth + seatGap) - seatGap + offset;
+        if (scene.position == ScenePosition.NORTH) {
+            int totalWidth = width * (seatWidth + seatGap) - seatGap + offset;
             topX = 0;
-            topY = totalWidth / 2 - mWidth * 6;
-            bottomX = topX + mScene.dimension;
-            bottomY = topY + mScene.dimensionSecond;
+            topY = totalWidth / 2 - width * 6;
+            bottomX = topX + scene.dimension;
+            bottomY = topY + scene.dimensionSecond;
         }
-        if (mScene.position == ScenePosition.SOUTH) {
-            int totalWidth = mWidth * (seatWidth + seatGap) - seatGap + offset;
-            topX = mHeight * (seatWidth + seatGap) - seatGap + offset;
-            topY = totalWidth / 2 - mWidth * 6;
-            bottomX = topX + mScene.dimension;
-            bottomY = topY + mScene.dimensionSecond;
+        if (scene.position == ScenePosition.SOUTH) {
+            int totalWidth = width * (seatWidth + seatGap) - seatGap + offset;
+            topX = height * (seatWidth + seatGap) - seatGap + offset;
+            topY = totalWidth / 2 - width * 6;
+            bottomX = topX + scene.dimension;
+            bottomY = topY + scene.dimensionSecond;
         }
-        if (mScene.position == ScenePosition.EAST) {
-            int totalHeight = mHeight * (seatWidth + seatGap) - seatGap + offset;
-            topX = totalHeight / 2 - mHeight * 6;
+        if (scene.position == ScenePosition.EAST) {
+            int totalHeight = height * (seatWidth + seatGap) - seatGap + offset;
+            topX = totalHeight / 2 - height * 6;
             topY = 0;
-            bottomX = topX + mScene.dimensionSecond;
-            bottomY = topY + mScene.dimension;
+            bottomX = topX + scene.dimensionSecond;
+            bottomY = topY + scene.dimension;
         }
-        if (mScene.position == ScenePosition.WEST) {
-            int totalHeight = mHeight * (seatWidth + seatGap) - seatGap + offset;
-            topX = totalHeight / 2 - mHeight * 6;
-            topY = mWidth * (seatWidth + seatGap) - seatGap + offset;
-            bottomX = topX + mScene.dimensionSecond;
-            bottomY = topY + mScene.dimension;
+        if (scene.position == ScenePosition.WEST) {
+            int totalHeight = height * (seatWidth + seatGap) - seatGap + offset;
+            topX = totalHeight / 2 - height * 6;
+            topY = width * (seatWidth + seatGap) - seatGap + offset;
+            bottomX = topX + scene.dimensionSecond;
+            bottomY = topY + scene.dimension;
         }
-        canvas.drawRect(topY, topX, bottomY, bottomX, mBackgroundPaint);
+        canvas.drawRect(topY, topX, bottomY, bottomX, backgroundPaint);
         canvas.save();
-        if (mScene.position == ScenePosition.EAST) {
+        if (scene.position == ScenePosition.EAST) {
             canvas.rotate(270, (topY+bottomY)/2, (topX+bottomX)/2);
-        } else if (mScene.position == ScenePosition.WEST) {
+        } else if (scene.position == ScenePosition.WEST) {
             canvas.rotate(90, (topY+bottomY)/2, (topX+bottomX)/2);
         }
-        drawTextCentred(canvas, mScenePaint, sceneName, (topY+bottomY)/2, (topX+bottomX)/2);
+        drawTextCentred(canvas, scenePaint, sceneName, (topY+bottomY)/2, (topX+bottomX)/2);
         canvas.restore();
     }
 
@@ -219,11 +223,8 @@ public class HallScheme {
     }
 
     private void nullifyMap() {
-        mWidth = 0;
-        mHeight = 0;
-        mSelectedSeats = 0;
-        mSelectedPrice = 0;
-        mSelectedCharge = 0;
+        width = 0;
+        height = 0;
         image.setShouldOnMeasureBeCalled(true);
     }
 
@@ -240,36 +241,42 @@ public class HallScheme {
     public static class Scene {
 
         private ScenePosition position;
-        private int dimension = 90;
+        private int dimension;
         public int dimensionSecond;
+        public int width, height;
 
         public void setScenePosition(ScenePosition position) {
-            position = this.position;
-        }
-
-        public Scene(String scene, int width, int height) {
-            switch (scene) {
-                case "north":
-                    position = ScenePosition.NORTH;
+            this.position = position;
+            dimension = 90;
+            switch (position) {
+                case NORTH:
                     dimensionSecond = width * 12;
                     break;
-                case "south":
-                    position = ScenePosition.SOUTH;
+                case SOUTH:
                     dimensionSecond = width * 12;
                     break;
-                case "east":
-                    position = ScenePosition.EAST;
+                case EAST:
                     dimensionSecond = height * 12;
                     break;
-                case "west":
-                    position = ScenePosition.WEST;
+                case WEST:
                     dimensionSecond = height * 12;
+                    break;
+                case NONE:
+                    dimensionSecond = 0;
+                    dimension = 0;
                     break;
                 default:
-                    position = ScenePosition.NONE;
-                    dimension = 0;
                     dimensionSecond = 0;
+                    dimension = 0;
+                    this.position = ScenePosition.NONE;
+                    break;
             }
+        }
+
+        public Scene(ScenePosition position, int width, int height) {
+            this.width = width;
+            this.height = height;
+            setScenePosition(position);
         }
 
         public int getTopXOffset() {
@@ -326,7 +333,7 @@ public class HallScheme {
 
     @Override
     public String toString() {
-        return String.format("height = %d; width = %d", mHeight, mWidth);
+        return String.format("height = %d; width = %d", height, width);
     }
 
 }
