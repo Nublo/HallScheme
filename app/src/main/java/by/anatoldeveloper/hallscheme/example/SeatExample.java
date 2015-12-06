@@ -6,16 +6,16 @@ import by.anatoldeveloper.hallscheme.hall.HallScheme;
 import by.anatoldeveloper.hallscheme.hall.Seat;
 
 /**
- * Created by Moneyman.ru on 05.12.2015.
- * Copyright Moneyman.ru
+ * Created by Nublo on 05.12.2015.
+ * Copyright Nublo
  */
 public class SeatExample implements Seat {
 
-    int id;
-    int color = Color.RED;
-    String marker;
-    String selectedSeatMarker;
-    HallScheme.SeatStatus status;
+    public int id;
+    public int color = Color.RED;
+    public String marker;
+    public String selectedSeatMarker;
+    public HallScheme.SeatStatus status;
 
     @Override
     public int id() {
