@@ -43,13 +43,13 @@ public class BasicSchemeFragment extends Fragment {
         return rootView;
     }
 
-    public static Seat[][] basicScheme() {
+    public Seat[][] basicScheme() {
         Seat seats[][] = new Seat[10][10];
         for (int i = 0; i < 10; i++)
             for(int j = 0; j < 10; j++) {
                 SeatExample seat = new SeatExample();
                 seat.id = i * 10 + (j+1);
-                seat.selectedSeatMarker = String.valueOf(i+1);
+                seat.selectedSeatMarker = String.valueOf(j+1);
                 seat.status = HallScheme.SeatStatus.FREE;
                 seats[i][j] = seat;
             }

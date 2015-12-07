@@ -46,7 +46,7 @@ public class SchemeWithMarkersFragment extends Fragment {
         return rootView;
     }
 
-    public static Seat[][] basicScheme() {
+    public Seat[][] basicScheme() {
         Seat seats[][] = new Seat[12][18];
         int k = 0;
         for (int i = 0; i < 12; i++)

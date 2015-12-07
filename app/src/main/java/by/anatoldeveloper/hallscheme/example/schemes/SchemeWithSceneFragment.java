@@ -46,7 +46,7 @@ public class SchemeWithSceneFragment extends Fragment {
         return rootView;
     }
 
-    public static Seat[][] schemeWithScene() {
+    public Seat[][] schemeWithScene() {
         Seat seats[][] = new Seat[16][29];
         int k = 0;
         for (int i = 0; i < 16; i++)

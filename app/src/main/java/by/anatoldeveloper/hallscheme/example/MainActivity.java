@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import by.anatoldeveloper.hallscheme.example.schemes.BasicSchemeFragment;
+import by.anatoldeveloper.hallscheme.example.schemes.SchemeDarkTheme;
 import by.anatoldeveloper.hallscheme.example.schemes.SchemeWithMarkersFragment;
 import by.anatoldeveloper.hallscheme.example.schemes.SchemeWithSceneFragment;
 
@@ -50,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case 2 :
                             replaceFragmentAndAddToBackStack(new SchemeWithMarkersFragment());
+                            break;
+                        case 3 :
+                            replaceFragmentAndAddToBackStack(new SchemeDarkTheme());
                             break;
                     }
                 }

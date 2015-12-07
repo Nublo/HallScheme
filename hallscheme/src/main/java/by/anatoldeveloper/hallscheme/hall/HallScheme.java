@@ -25,7 +25,7 @@ public class HallScheme {
     private final Rect textBounds = new Rect();
     private Paint textPaint, backgroundPaint, markerPaint, scenePaint;
     private int seatWidth, seatGap, offset;
-    private int schemeBackgroundColor, unavailableSeatColor, chosenColor;
+    private int schemeBackgroundColor, unavailableSeatColor, chosenColor, sceneBackgroundColor;
     private Typeface robotoMedium;
     private String sceneName;
 
@@ -64,6 +64,7 @@ public class HallScheme {
             markerPaint = initTextPaint(context.getColor(R.color.black_gray));
             scenePaint = initTextPaint(context.getColor(R.color.black_gray));
         }
+        sceneBackgroundColor = unavailableSeatColor;
         textPaint = initTextPaint(Color.WHITE);
         scenePaint.setTextSize(35);
 
@@ -87,6 +88,41 @@ public class HallScheme {
 
     public void setSceneName(String name) {
         sceneName = name;
+        image.setImageBitmap(getImageBitmap());
+    }
+
+    public void setBackgroundColor(int color) {
+        schemeBackgroundColor = color;
+        image.setImageBitmap(getImageBitmap());
+    }
+
+    public void setUnavailableSeatColor(int color) {
+        unavailableSeatColor = color;
+        image.setImageBitmap(getImageBitmap());
+    }
+
+    public void setChosenColor(int color) {
+        chosenColor = color;
+        image.setImageBitmap(getImageBitmap());
+    }
+
+    public void setMarkerPaintColor(int color) {
+        markerPaint.setColor(color);
+        image.setImageBitmap(getImageBitmap());
+    }
+
+    public void setScenePaintColor(int color) {
+        scenePaint.setColor(color);
+        image.setImageBitmap(getImageBitmap());
+    }
+
+    public void setSelectedSeatTextColor(int color) {
+        textPaint.setColor(color);
+        image.setImageBitmap(getImageBitmap());
+    }
+
+    public void setSceneBackgroundColor(int color) {
+        sceneBackgroundColor = color;
         image.setImageBitmap(getImageBitmap());
     }
 
@@ -176,7 +212,7 @@ public class HallScheme {
         if (scene.position == ScenePosition.NONE) {
             return;
         }
-        backgroundPaint.setColor(unavailableSeatColor);
+        backgroundPaint.setColor(sceneBackgroundColor);
         int topX=0, topY=0, bottomX=0, bottomY=0;
         if (scene.position == ScenePosition.NORTH) {
             int totalWidth = width * (seatWidth + seatGap) - seatGap + offset;
