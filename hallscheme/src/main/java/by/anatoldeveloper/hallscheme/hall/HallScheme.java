@@ -96,28 +96,28 @@ public class HallScheme {
         image.setImageBitmap(getImageBitmap());
     }
 
-    public void setUnavailableSeatColor(int color) {
+    public void setUnavailableSeatBackgroundColor(int color) {
         unavailableSeatColor = color;
         image.setImageBitmap(getImageBitmap());
     }
 
-    public void setChosenColor(int color) {
+    public void setChosenSeatTextColor(int color) {
+        textPaint.setColor(color);
+        image.setImageBitmap(getImageBitmap());
+    }
+
+    public void setChosenSeatBackgroundColor(int color) {
         chosenColor = color;
         image.setImageBitmap(getImageBitmap());
     }
 
-    public void setMarkerPaintColor(int color) {
+    public void setMarkerColor(int color) {
         markerPaint.setColor(color);
         image.setImageBitmap(getImageBitmap());
     }
 
-    public void setScenePaintColor(int color) {
+    public void setSceneTextColor(int color) {
         scenePaint.setColor(color);
-        image.setImageBitmap(getImageBitmap());
-    }
-
-    public void setSelectedSeatTextColor(int color) {
-        textPaint.setColor(color);
         image.setImageBitmap(getImageBitmap());
     }
 

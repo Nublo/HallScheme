@@ -31,11 +31,11 @@ public class SchemeDarkTheme extends Fragment {
         HallScheme scheme = new HallScheme(imageView, schemeWithDifferentColors(), getActivity());
         scheme.setBackgroundColor(getActivity().getResources().getColor(R.color.dark_grey));
         scheme.setScenePosition(ScenePosition.EAST);
-        scheme.setScenePaintColor(getActivity().getResources().getColor(R.color.dark_grey));
-        scheme.setSelectedSeatTextColor(getActivity().getResources().getColor(R.color.dark_grey));
+        scheme.setSceneTextColor(getActivity().getResources().getColor(R.color.dark_grey));
+        scheme.setChosenSeatTextColor(getActivity().getResources().getColor(R.color.dark_grey));
         scheme.setSceneBackgroundColor(getActivity().getResources().getColor(R.color.white));
-        scheme.setMarkerPaintColor(getActivity().getResources().getColor(R.color.white));
-        scheme.setChosenColor(getActivity().getResources().getColor(R.color.white));
+        scheme.setMarkerColor(getActivity().getResources().getColor(R.color.white));
+        scheme.setChosenSeatBackgroundColor(getActivity().getResources().getColor(R.color.white));
         scheme.setSeatListener(new SeatListener() {
 
             @Override
