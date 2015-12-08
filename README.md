@@ -181,9 +181,9 @@ To use the library you should implement custom `Seat`. It has the following meth
 
 **h)** Setting custom name for scene:
 
-    ```
-    scheme.setSceneName("Custom name");
-    ```
+```
+scheme.setSceneName("Custom name");
+```
 
 ### Restrictions
 
