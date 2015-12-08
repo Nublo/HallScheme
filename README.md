@@ -32,7 +32,6 @@ Hall Scheme is a lightweight simple library for creating rectangle halls.
 **3)** Customize `Seat` interface:
 
 ```
-java
 public class SeatExample implements Seat {
 
     public int id;
@@ -77,7 +76,6 @@ public class SeatExample implements Seat {
 **4)** Attach ZoomableImage to `HallScheme` and add a 2-dimesional `Seat` array:
 
 ```
-java
 ZoomableImageView imageView = (ZoomableImageView) rootView.findViewById(R.id.zoomable_image);
 Seat seats[][] = new Seat[10][10];
 HallScheme scheme = new HallScheme(imageView, seats, getActivity());
@@ -86,7 +84,6 @@ HallScheme scheme = new HallScheme(imageView, seats, getActivity());
 **5)** Set `SeatListener` to `HallScheme` to handle click events on seats:
 
 ```
-java
 scheme.setSeatListener(new SeatListener() {
 
             @Override
@@ -184,7 +181,7 @@ To use the library you should implement custom `Seat`. It has the following meth
 
 **h)** Setting custom name for scene:
 
-    ```java
+    ```
     scheme.setSceneName("Custom name");
     ```
 
