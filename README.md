@@ -1,9 +1,9 @@
-Hall Scheme
+HallScheme
 ====================
 
 ### Description
 
-Hall Scheme is a lightweight simple library for creating rectangle halls.
+HallScheme is a lightweight simple library for creating rectangle halls.
 
 ![Alt text](/art/hall_scheme_1.png?raw=true)  
 

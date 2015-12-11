@@ -1,1 +1,1 @@
-include ':app', ':hallscheme'
+include ':sample', ':library'
