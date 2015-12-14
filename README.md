@@ -7,11 +7,21 @@ HallScheme is a lightweight simple library for creating rectangle halls.
 
 ![Alt text](/art/hall_scheme_1.png?raw=true)  
 
-![Alt text](/art/hall_scheme_1_zoom.png?raw=true) 
+![Alt text](/art/hall_scheme_1_zoom.png?raw=true)
+
+### Demo
+
+[![HallScheme Demo on Google Play Store](http://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=by.anatoldeveloper.hallscheme.example)
 
 ### Integration
 
 **1)** Add as a dependency to your ``build.gradle``:
+
+```groovy
+dependencies {
+    compile 'com.github.Nublo:hallscheme:1.0.0'
+}
+```
 
 **2)** Add ``by.anatoldeveloper.ZoomableImage`` to your layout XML file. Content is automatically centered within free space.
 
