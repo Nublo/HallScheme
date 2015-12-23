@@ -1,6 +1,8 @@
 HallScheme
 ====================
 
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-HallScheme-green.svg?style=true)](https://android-arsenal.com/details/1/2935)
+
 ### Description
 
 HallScheme is a lightweight simple library for creating rectangle halls.
