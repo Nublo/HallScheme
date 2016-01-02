@@ -157,14 +157,24 @@ public class HallScheme {
         int row = p.x / (seatWidth + seatGap);
         int seat = p.y / (seatWidth + seatGap);
         if (canSeatPress(p, row, seat)) {
-            Seat pressedSeat = seats[seat][row];
-            if (updateSelectedSeatCount(pressedSeat)) {
-                notifySeatListener(pressedSeat);
-                pressedSeat.setStatus(pressedSeat.status().pressSeat());
-                image.setImageBitmap(getImageBitmap());
-            } else if (maxSeatsClickListener != null){
-                maxSeatsClickListener.maxSeatsReached(pressedSeat.id());
-            }
+            clickScheme(row, seat);
+        }
+    }
+
+    public void clickSchemeProgrammatically(int row, int seat) {
+        if (SeatStatus.canSeatBePressed(seats[row][seat].status())) {
+            clickScheme(seat, row);
+        }
+    }
+
+    private void clickScheme(int row, int seat) {
+        Seat pressedSeat = seats[seat][row];
+        if (updateSelectedSeatCount(pressedSeat)) {
+            notifySeatListener(pressedSeat);
+            pressedSeat.setStatus(pressedSeat.status().pressSeat());
+            image.setImageBitmap(getImageBitmap());
+        } else if (maxSeatsClickListener != null) {
+            maxSeatsClickListener.maxSeatsReached(pressedSeat.id());
         }
     }
 
