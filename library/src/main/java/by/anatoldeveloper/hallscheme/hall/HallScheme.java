@@ -26,14 +26,18 @@ public class HallScheme {
     private Paint textPaint, backgroundPaint, markerPaint, scenePaint;
     private int seatWidth, seatGap, offset;
     private int schemeBackgroundColor, unavailableSeatColor, chosenColor, sceneBackgroundColor;
+    private int selectedSeats, maxSelectedSeats;
     private Typeface robotoMedium;
     private String sceneName;
 
     private Scene scene;
     private ZoomableImageView image;
     private SeatListener listener;
+    private MaxSeatsClickListener maxSeatsClickListener;
 
     public HallScheme(ZoomableImageView image, Seat[][] seats, Context context) {
+        this.selectedSeats = 0;
+        this.maxSelectedSeats = -1;
         this.image = image;
         this.seats = seats;
         this.scene = new Scene(ScenePosition.NONE, 0, 0);
@@ -126,8 +130,16 @@ public class HallScheme {
         image.setImageBitmap(getImageBitmap());
     }
 
+    public void setMaxSelectedSeats(int maxSelectedSeats) {
+        this.maxSelectedSeats = maxSelectedSeats;
+    }
+
     public void setSeatListener(SeatListener listener) {
         this.listener = listener;
+    }
+
+    public void setMaxSeatsClickListener(MaxSeatsClickListener maxSeatsClickListener) {
+        this.maxSeatsClickListener = maxSeatsClickListener;
     }
 
     private Paint initTextPaint(int color) {
@@ -146,10 +158,32 @@ public class HallScheme {
         int seat = p.y / (seatWidth + seatGap);
         if (canSeatPress(p, row, seat)) {
             Seat pressedSeat = seats[seat][row];
-            notifySeatListener(pressedSeat);
-            pressedSeat.setStatus(pressedSeat.status().pressSeat());
-            image.setImageBitmap(getImageBitmap());
+            if (updateSelectedSeatCount(pressedSeat)) {
+                notifySeatListener(pressedSeat);
+                pressedSeat.setStatus(pressedSeat.status().pressSeat());
+                image.setImageBitmap(getImageBitmap());
+            } else if (maxSeatsClickListener != null){
+                maxSeatsClickListener.maxSeatsReached(pressedSeat.id());
+            }
         }
+    }
+
+    /**
+     * Increases or decreases current selected seats count
+     * @param seat Seat that has been clicked
+     * @return false If selected seats reached max limit, false otherwise
+     */
+    public boolean updateSelectedSeatCount(Seat seat) {
+        if (seat.status() == SeatStatus.FREE) {
+            if (maxSelectedSeats == -1 || selectedSeats + 1 <= maxSelectedSeats) {
+                selectedSeats++;
+            } else if (selectedSeats + 1 > maxSelectedSeats) {
+                return false;
+            }
+            return true;
+        }
+        selectedSeats--;
+        return true;
     }
 
     public boolean canSeatPress(Point p, int row, int seat) {
