@@ -27,7 +27,7 @@ public class HallScheme {
     private int seatWidth, seatGap, offset;
     private int schemeBackgroundColor, unavailableSeatColor, chosenColor, sceneBackgroundColor;
     private int selectedSeats, maxSelectedSeats;
-    private Typeface robotoMedium;
+    private Typeface typeface;
     private String sceneName;
 
     private Scene scene;
@@ -52,7 +52,7 @@ public class HallScheme {
             }
         });
 
-        robotoMedium = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Medium.ttf");
+        typeface = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Medium.ttf");
         sceneName = context.getString(R.string.scene);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -142,13 +142,26 @@ public class HallScheme {
         this.maxSeatsClickListener = maxSeatsClickListener;
     }
 
+    /**
+     * Set custom typeface to scheme.
+     * Be careful when using. Bold typefaces can be drawn incorrectly.
+     * @param typeface - Typeface to be setted
+     */
+    public void setTypeface(Typeface typeface) {
+        this.typeface = typeface;
+        markerPaint.setTypeface(typeface);
+        scenePaint.setTypeface(typeface);
+        textPaint.setTypeface(typeface);
+        image.setImageBitmap(getImageBitmap());
+    }
+
     private Paint initTextPaint(int color) {
         Paint paint = new Paint();
         paint.setColor(color);
         paint.setStyle(Paint.Style.FILL);
         paint.setStrokeMiter(0);
         paint.setTextSize(25);
-        paint.setTypeface(robotoMedium);
+        paint.setTypeface(typeface);
         return paint;
     }
 
