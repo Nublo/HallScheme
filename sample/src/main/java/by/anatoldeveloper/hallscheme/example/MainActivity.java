@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import by.anatoldeveloper.hallscheme.example.schemes.BasicSchemeFragment;
+import by.anatoldeveloper.hallscheme.example.schemes.SchemeCustomTypeface;
 import by.anatoldeveloper.hallscheme.example.schemes.SchemeDarkTheme;
 import by.anatoldeveloper.hallscheme.example.schemes.SchemeWithMarkersFragment;
 import by.anatoldeveloper.hallscheme.example.schemes.SchemeWithSceneFragment;
@@ -58,7 +59,8 @@ public class MainActivity extends AppCompatActivity {
 
     public static class ListFragment extends Fragment {
 
-        private static final String[] halls = {"Basic hall scheme", "Scheme with scene", "Scheme with markers", "Custom colors scheme"};
+        private static final String[] halls = {"Basic hall scheme", "Scheme with scene", "Scheme with markers",
+                "Custom colors scheme", "Custom typeface"};
 
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.halls_fragment, container, false);
@@ -81,6 +83,9 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case 3 :
                             replaceFragmentAndAddToBackStack(new SchemeDarkTheme());
+                            break;
+                        case 4 :
+                            replaceFragmentAndAddToBackStack(new SchemeCustomTypeface());
                             break;
                     }
                 }
