@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ZoomableImageView">
+        <attr name="doubleTap" format="boolean" />
+    </declare-styleable>
+</resources>
