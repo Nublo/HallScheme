@@ -40,7 +40,6 @@ public class HallScheme {
         this.maxSelectedSeats = -1;
         this.image = image;
         this.seats = seats;
-        this.scene = new Scene(ScenePosition.NONE, 0, 0);
         nullifyMap();
 
         image.setClickListener(new ImageClickListener() {
@@ -82,11 +81,12 @@ public class HallScheme {
         offset = 30;
         height = seats.length;
         width = seats[0].length;
+        this.scene = new Scene(ScenePosition.NONE, 0, 0, offset/2);
         image.setImageBitmap(getImageBitmap());
     }
 
     public void setScenePosition(ScenePosition position) {
-        scene = new Scene(position, width, height);
+        scene = new Scene(position, width, height, offset/2);
         image.setImageBitmap(getImageBitmap());
     }
 
@@ -273,7 +273,7 @@ public class HallScheme {
         int topX=0, topY=0, bottomX=0, bottomY=0;
         if (scene.position == ScenePosition.NORTH) {
             int totalWidth = width * (seatWidth + seatGap) - seatGap + offset;
-            topX = 0;
+            topX = offset / 2;
             topY = totalWidth / 2 - width * 6;
             bottomX = topX + scene.dimension;
             bottomY = topY + scene.dimensionSecond;
@@ -288,7 +288,7 @@ public class HallScheme {
         if (scene.position == ScenePosition.EAST) {
             int totalHeight = height * (seatWidth + seatGap) - seatGap + offset;
             topX = totalHeight / 2 - height * 6;
-            topY = 0;
+            topY = offset / 2;
             bottomX = topX + scene.dimensionSecond;
             bottomY = topY + scene.dimension;
         }
@@ -336,10 +336,11 @@ public class HallScheme {
         private ScenePosition position;
         private int dimension;
         public int dimensionSecond;
-        public int width, height;
+        public int width, height, offset;
 
-        public void setScenePosition(ScenePosition position) {
+        public void setScenePosition(ScenePosition position, int offset) {
             this.position = position;
+            this.offset = offset;
             dimension = 90;
             switch (position) {
                 case NORTH:
@@ -366,36 +367,36 @@ public class HallScheme {
             }
         }
 
-        public Scene(ScenePosition position, int width, int height) {
+        public Scene(ScenePosition position, int width, int height, int offset) {
             this.width = width;
             this.height = height;
-            setScenePosition(position);
+            setScenePosition(position, offset);
         }
 
         public int getTopXOffset() {
             if (position == ScenePosition.NORTH) {
-                return dimension;
+                return dimension + offset;
             }
             return 0;
         }
 
         public int getLeftYOffset() {
             if (position == ScenePosition.EAST) {
-                return dimension;
+                return dimension + offset;
             }
             return 0;
         }
 
         public int getBottomXOffset() {
             if (position == ScenePosition.SOUTH) {
-                return dimension;
+                return dimension + offset;
             }
             return 0;
         }
 
         public int getRightYOffset() {
             if (position == ScenePosition.WEST) {
-                return dimension;
+                return dimension + offset;
             }
             return 0;
         }
