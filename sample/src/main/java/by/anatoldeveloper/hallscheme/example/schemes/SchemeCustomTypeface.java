@@ -18,8 +18,8 @@ import by.anatoldeveloper.hallscheme.hall.SeatListener;
 import by.anatoldeveloper.hallscheme.view.ZoomableImageView;
 
 /**
- * Created by Moneyman.ru on 03.01.2016.
- * Copyright Moneyman.ru
+ * Created by Nublo on 03.01.2016.
+ * Copyright Nublo
  */
 public class SchemeCustomTypeface extends Fragment {
 
