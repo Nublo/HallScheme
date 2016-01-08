@@ -9,6 +9,10 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import by.anatoldeveloper.hallscheme.view.ZoomableImageView;
 import by.anatoldeveloper.hallscheme.R;
@@ -34,6 +38,8 @@ public class HallScheme {
     private ZoomableImageView image;
     private SeatListener listener;
     private MaxSeatsClickListener maxSeatsClickListener;
+    private List<Zone> zones;
+    private ZoneListener zoneListener;
 
     public HallScheme(ZoomableImageView image, Seat[][] seats, Context context) {
         this.selectedSeats = 0;
@@ -155,6 +161,15 @@ public class HallScheme {
         image.setImageBitmap(getImageBitmap());
     }
 
+    public void setZones(List<Zone> zones) {
+        this.zones = zones;
+        image.setImageBitmap(getImageBitmap());
+    }
+
+    public void setZoneListener(ZoneListener zoneListener) {
+        this.zoneListener = zoneListener;
+    }
+
     private Paint initTextPaint(int color) {
         Paint paint = new Paint();
         paint.setColor(color);
@@ -166,12 +181,29 @@ public class HallScheme {
     }
 
     private void clickScheme(Point point) {
+        if (findZoneClick(point))
+            return;
         Point p = new Point(point.x - offset/2, point.y - offset/2);
         int row = p.x / (seatWidth + seatGap);
         int seat = p.y / (seatWidth + seatGap);
         if (canSeatPress(p, row, seat)) {
             clickScheme(row, seat);
         }
+    }
+
+    public boolean findZoneClick(Point p) {
+        for (Zone zone : zones) {
+            int topX = offset/2 + zone.leftTopX() * (seatWidth + seatGap);
+            int topY = offset/2 + zone.leftTopY() * (seatWidth + seatGap);
+            int bottomX = offset/2 + (zone.leftTopX() + zone.width()) * (seatWidth + seatGap) - seatGap;
+            int bottomY = offset/2 + (zone.leftTopY() + zone.height()) * (seatWidth + seatGap) - seatGap;
+            if (p.x >= topX && p.x <= bottomX && p.y >= topY && p.y <= bottomY) {
+                if (zoneListener != null)
+                    zoneListener.zoneClick(zone.id());
+                return true;
+            }
+        }
+        return false;
     }
 
     public void clickSchemeProgrammatically(int row, int seat) {
@@ -260,6 +292,19 @@ public class HallScheme {
             }
         }
 
+        for(Zone zone : zones) {
+            if (zone.width() == 0 || zone.height() == 0
+                    || zone.leftTopX() + zone.width() > width
+                    || zone.leftTopY() + zone.height() > height)
+                continue;
+            backgroundPaint.setColor(zone.color());
+            int topX = offset/2 + zone.leftTopX() * (seatWidth + seatGap) + scene.getLeftYOffset();
+            int topY = offset/2 + zone.leftTopY() * (seatWidth + seatGap) + scene.getTopXOffset();
+            int bottomX = offset/2 + (zone.leftTopX() + zone.width()) * (seatWidth + seatGap) - seatGap + scene.getLeftYOffset();
+            int bottomY = offset/2 + (zone.leftTopY() + zone.height()) * (seatWidth + seatGap) - seatGap + scene.getTopXOffset();
+            tempCanvas.drawRect(topX, topY, bottomX, bottomY, backgroundPaint);
+        }
+
         drawScene(tempCanvas);
 
         return tempBitmap;
@@ -318,6 +363,7 @@ public class HallScheme {
     private void nullifyMap() {
         width = 0;
         height = 0;
+        zones = new ArrayList<>();
         image.setShouldOnMeasureBeCalled(true);
     }
 
