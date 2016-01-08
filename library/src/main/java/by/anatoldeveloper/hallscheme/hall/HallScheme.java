@@ -9,13 +9,12 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import by.anatoldeveloper.hallscheme.view.ZoomableImageView;
 import by.anatoldeveloper.hallscheme.R;
+import by.anatoldeveloper.hallscheme.view.ZoomableImageView;
 
 /**
  * Created by Nublo on 28.10.2015.

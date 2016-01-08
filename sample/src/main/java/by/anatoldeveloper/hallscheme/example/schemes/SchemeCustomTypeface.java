@@ -9,12 +9,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import by.anatoldeveloper.hallscheme.example.R;
 import by.anatoldeveloper.hallscheme.example.SeatExample;
+import by.anatoldeveloper.hallscheme.example.ZoneExample;
 import by.anatoldeveloper.hallscheme.hall.HallScheme;
 import by.anatoldeveloper.hallscheme.hall.ScenePosition;
 import by.anatoldeveloper.hallscheme.hall.Seat;
 import by.anatoldeveloper.hallscheme.hall.SeatListener;
+import by.anatoldeveloper.hallscheme.hall.Zone;
+import by.anatoldeveloper.hallscheme.hall.ZoneListener;
 import by.anatoldeveloper.hallscheme.view.ZoomableImageView;
 
 /**
@@ -44,6 +50,13 @@ public class SchemeCustomTypeface extends Fragment {
 
         });
         scheme.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/DroidSansMono.ttf"));
+        scheme.setZones(zones());
+        scheme.setZoneListener(new ZoneListener() {
+            @Override
+            public void zoneClick(int id) {
+                Toast.makeText(getActivity(), "zone click " + id, Toast.LENGTH_SHORT).show();
+            }
+        });
         return rootView;
     }
 
@@ -86,6 +99,17 @@ public class SchemeCustomTypeface extends Fragment {
                 seats[i][j] = seat;
             }
         return seats;
+    }
+
+    public List<Zone> zones() {
+        List<Zone> zones = new ArrayList<>();
+        ZoneExample zone1 = new ZoneExample(201, 5, 3, 6, 3, getActivity().getResources().getColor(R.color.dark_purple), null);
+        ZoneExample zone2 = new ZoneExample(202, 5, 7, 6, 3, getActivity().getResources().getColor(R.color.dark_green), null);
+        ZoneExample zone3 = new ZoneExample(204, 11, 3, 6, 6, getActivity().getResources().getColor(R.color.white), null);
+        zones.add(zone1);
+        zones.add(zone2);
+        zones.add(zone3);
+        return zones;
     }
 
 }
