@@ -21,7 +21,7 @@ HallScheme is a lightweight simple library for creating rectangle halls.
 
 ```groovy
 dependencies {
-    compile 'com.github.Nublo:hallscheme:1.0.0'
+    compile 'com.github.Nublo:hallscheme:1.0.1'
 }
 ```
 
@@ -136,6 +136,27 @@ To use the library you should implement custom `Seat`. It has the following meth
 
 **a)** Zoomable image.
 
+Zooming can be enabled/disabled either from code:
+
+`imageView.setZoomByDoubleTap(false);`
+
+or from xml:
+
+	<?xml version="1.0" encoding="utf-8"?>
+	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    	xmlns:hallscheme="http://schemas.android.com/apk/res"
+    	android:orientation="vertical"
+    	android:layout_width="match_parent"
+    	android:layout_height="match_parent"
+    	android:background="#FFD8E2E6">
+
+    	<by.anatoldeveloper.hallscheme.view.ZoomableImageView
+        	android:id="@+id/zoomable_image"
+        	android:layout_width="match_parent"
+        	android:layout_height="match_parent"
+        	hallscheme:doubleTap="false"/>
+	</RelativeLayout>
+
 **b)** Fling while touching image.
 
 **c)** Smooth animation available either on double tap or on gesture move.
@@ -153,7 +174,7 @@ To use the library you should implement custom `Seat`. It has the following meth
 
 **f)** Handling clicking on seats on your scheme.
 
-**g)** Full customization of color for drawing.
+**g)** Full customization for drawing:
 
 + Setting background color for scheme:
 
@@ -190,16 +211,59 @@ To use the library you should implement custom `Seat`. It has the following meth
     ```java
     scheme.setSceneBackgroundColor(Color.RED);
     ```
++ Setting custom typeface for Scene:
+
+    ```java
+    scheme.setTypeface(typeface);
+    ```
 
 **h)** Setting custom name for scene:
 
-```
-scheme.setSceneName("Custom name");
-```
+	```java
+	scheme.setSceneName("Custom name");
+	```
+
+**i)** Setting limit of checked seats and set listener for this event:
+
+	```java
+    scheme.setMaxSelectedSeats(4);
+	scheme.setMaxSeatsClickListener(new MaxSeatsClickListener() {
+        @Override
+        public void maxSeatsReached(int id) {
+            // Do something
+        }
+    });
+    ```
+By default it is unlimitted. So user can check as many seats as he wants.
+
+**j)** Programmatically click on scheme:
+
+	```java
+	scheme.clickSchemeProgrammatically(3, 4);
+	```
+So if seat was checked it becomes unchecked and `Seatlistener` will be notified.
+If seat was unchecked and limit is not reached seat becomes checked and `SeatListener` will be notified, otherway(when limit reached) seat will not be checked and `MaxSeatsListener` will be notified.
+
+**k)** Adding seat areas.
+
+Seat area will be drawn like a solid rectangle on scene and can have size from 1x1 block to all scheme. When user is clicking on seat area listener will be notified. Clicking on seat area is not counting in `maxSelectedSeats`. 
+
+You can see how to use seat areas in examples. Main principle like with seats. You should set left top corner, width, height and color. Name for scene is not used in current library implementation.
+
 
 ### Restrictions
 
 Image is currently drawing on standart `Bitmap`. Maximum size of `Bitmap` depends on underlying OpenGL implementation and it varies depending on device. It shouldn't be less then `2048x2048`. With current implementation your hall dimension(either rows or columns) shouldn't be more then `58`. Maximum scheme that can be drawn is `58x58`. Of course, if you know that devices using your app will have bigger maximum size - you can draw larger schemes.
+
+### ChangeLog
+
+**Version 1.0.1:**
+
++ Ability to set custom typeface
++ Disable zooming by double tap
++ Programmaticaly click seat on scheme
++ Limiting checked seats
++ Added seat areas
 
 ### License
 
