@@ -13,7 +13,7 @@ HallScheme is a lightweight simple library for creating rectangle halls.
 
 ### Demo
 
-[![HallScheme Demo on Google Play Store](http://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=by.anatoldeveloper.hallscheme.example)
+[![HallScheme Demo on Google Play Store](/art/google-play-badge.png?raw=true)](https://play.google.com/store/apps/details?id=by.anatoldeveloper.hallscheme.example)
 
 ### Integration
 
@@ -218,14 +218,11 @@ or from xml:
     ```
 
 **h)** Setting custom name for scene:
-
-	```java
-	scheme.setSceneName("Custom name");
-	```
+	
+	scheme.setSceneName("Custom name");	
 
 **i)** Setting limit of checked seats and set listener for this event:
 
-	```java
     scheme.setMaxSelectedSeats(4);
 	scheme.setMaxSeatsClickListener(new MaxSeatsClickListener() {
         @Override
@@ -233,14 +230,13 @@ or from xml:
             // Do something
         }
     });
-    ```
+    
 By default it is unlimitted. So user can check as many seats as he wants.
 
 **j)** Programmatically click on scheme:
 
-	```java
 	scheme.clickSchemeProgrammatically(3, 4);
-	```
+	
 So if seat was checked it becomes unchecked and `Seatlistener` will be notified.
 If seat was unchecked and limit is not reached seat becomes checked and `SeatListener` will be notified, otherway(when limit reached) seat will not be checked and `MaxSeatsListener` will be notified.
 
@@ -248,7 +244,7 @@ If seat was unchecked and limit is not reached seat becomes checked and `SeatLis
 
 Seat area will be drawn like a solid rectangle on scene and can have size from 1x1 block to all scheme. When user is clicking on seat area listener will be notified. Clicking on seat area is not counting in `maxSelectedSeats`. 
 
-You can see how to use seat areas in examples. Main principle like with seats. You should set left top corner, width, height and color. Name for scene is not used in current library implementation.
+You can see how to use seat areas in examples. Main principle like with seats. You should set left top corner, width, height and color. Name for seat area is not used in current library implementation.
 
 
 ### Restrictions
@@ -270,7 +266,7 @@ Image is currently drawing on standart `Bitmap`. Maximum size of `Bitmap` depend
 ```
 The MIT License (MIT)
 
-Copyright (c) 2015 Varyvonchyk Anatol
+Copyright (c) 2016 Varyvonchyk Anatol
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
