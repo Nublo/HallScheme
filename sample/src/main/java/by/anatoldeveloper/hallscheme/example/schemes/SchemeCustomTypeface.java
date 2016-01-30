@@ -1,5 +1,6 @@
 package by.anatoldeveloper.hallscheme.example.schemes;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,20 +8,15 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import by.anatoldeveloper.hallscheme.example.R;
 import by.anatoldeveloper.hallscheme.example.SeatExample;
-import by.anatoldeveloper.hallscheme.example.ZoneExample;
 import by.anatoldeveloper.hallscheme.hall.HallScheme;
 import by.anatoldeveloper.hallscheme.hall.ScenePosition;
 import by.anatoldeveloper.hallscheme.hall.Seat;
 import by.anatoldeveloper.hallscheme.hall.SeatListener;
-import by.anatoldeveloper.hallscheme.hall.Zone;
-import by.anatoldeveloper.hallscheme.hall.ZoneListener;
 import by.anatoldeveloper.hallscheme.view.ZoomableImageView;
 
 /**
@@ -29,11 +25,26 @@ import by.anatoldeveloper.hallscheme.view.ZoomableImageView;
  */
 public class SchemeCustomTypeface extends Fragment {
 
+    boolean doubleTap = false;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.basic_scheme_fragment, container, false);
-        ZoomableImageView imageView = (ZoomableImageView) rootView.findViewById(R.id.zoomable_image);
+        View rootView = inflater.inflate(R.layout.scheme_with_button, container, false);
+        final ZoomableImageView imageView = (ZoomableImageView) rootView.findViewById(R.id.zoomable_image);
+        final Button zoomButton = (Button) rootView.findViewById(R.id.scheme_button);
+        zoomButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doubleTap = !doubleTap;
+                imageView.setZoomByDoubleTap(doubleTap);
+                if (doubleTap) {
+                    zoomButton.setText(getString(R.string.double_tap_enabled));
+                } else {
+                    zoomButton.setText(getString(R.string.double_tap_disabled));
+                }
+            }
+        });
         HallScheme scheme = new HallScheme(imageView, basicScheme(), getActivity());
         scheme.setScenePosition(ScenePosition.NORTH);
         scheme.setSeatListener(new SeatListener() {
@@ -50,66 +61,36 @@ public class SchemeCustomTypeface extends Fragment {
 
         });
         scheme.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/DroidSansMono.ttf"));
-        scheme.setZones(zones());
-        scheme.setZoneListener(new ZoneListener() {
-            @Override
-            public void zoneClick(int id) {
-                Toast.makeText(getActivity(), "zone click " + id, Toast.LENGTH_SHORT).show();
-            }
-        });
         return rootView;
     }
 
     public Seat[][] basicScheme() {
-        Seat seats[][] = new Seat[12][18];
+        Seat seats[][] = new Seat[7][14];
         int k = 0;
-        for (int i = 0; i < 12; i++)
-            for(int j = 0; j < 18; j++) {
+        for (int i = 0; i < 7; i++)
+            for(int j = 0; j < 14; j++) {
                 SeatExample seat = new SeatExample();
                 seat.id = ++k;
                 seat.selectedSeatMarker = String.valueOf(i+1);
                 seat.status = HallScheme.SeatStatus.BUSY;
-                if (j == 0 || j == 17) {
-                    seat.status = HallScheme.SeatStatus.EMPTY;
-                    if (i > 2 && i < 10) {
-                        seat.marker = String.valueOf(i);
-                        seat.status = HallScheme.SeatStatus.INFO;
-                    }
-                }
-                if (((j > 0 && j < 3) || (j > 14 && j < 17)) && i == 0) {
-                    seat.status = HallScheme.SeatStatus.EMPTY;
-                    if (j == 2 || j == 15) {
-                        seat.marker = String.valueOf(i+1);
-                        seat.status = HallScheme.SeatStatus.INFO;
-                    }
-                }
-                if (((j > 0 && j < 2) || (j > 15 && j < 17)) && i == 1) {
-                    seat.status = HallScheme.SeatStatus.EMPTY;
-                    if (j == 1 || j == 16) {
-                        seat.marker = String.valueOf(i+1);
-                        seat.status = HallScheme.SeatStatus.INFO;
-                    }
-                }
-                if (i == 2)
-                    seat.status = HallScheme.SeatStatus.EMPTY;
-                if (i > 9 && (j == 1 || j == 16)) {
+                if (j == 0 || j == 13) {
+                    seat.marker = String.valueOf(i+1);
                     seat.status = HallScheme.SeatStatus.INFO;
-                    seat.marker = String.valueOf(i);
+                }
+                if (j > 5 && j < 8) {
+                    seat.status = HallScheme.SeatStatus.EMPTY;
+                }
+                if (((j > 0 && j < 6) || (j > 7 && j < 13)) && i < 2) {
+                    seat.status = HallScheme.SeatStatus.FREE;
+                    seat.color = Color.RED;
+                }
+                if (((j > 0 && j < 6) || (j > 7 && j < 13)) && i > 4) {
+                    seat.status = HallScheme.SeatStatus.FREE;
+                    seat.color = Color.GREEN;
                 }
                 seats[i][j] = seat;
             }
         return seats;
-    }
-
-    public List<Zone> zones() {
-        List<Zone> zones = new ArrayList<>();
-        ZoneExample zone1 = new ZoneExample(201, 5, 3, 6, 3, getActivity().getResources().getColor(R.color.dark_purple), null);
-        ZoneExample zone2 = new ZoneExample(202, 5, 7, 6, 3, getActivity().getResources().getColor(R.color.dark_green), null);
-        ZoneExample zone3 = new ZoneExample(204, 11, 3, 6, 6, getActivity().getResources().getColor(R.color.white), null);
-        zones.add(zone1);
-        zones.add(zone2);
-        zones.add(zone3);
-        return zones;
     }
 
 }
