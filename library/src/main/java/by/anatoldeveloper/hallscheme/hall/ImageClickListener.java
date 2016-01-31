@@ -3,8 +3,8 @@ package by.anatoldeveloper.hallscheme.hall;
 import android.graphics.Point;
 
 /**
- * Created by Moneyman.ru on 12.11.2015.
- * Copyright Moneyman.ru
+ * Created by Nublo on 12.11.2015.
+ * Copyright Nublo
  */
 public interface ImageClickListener {
 

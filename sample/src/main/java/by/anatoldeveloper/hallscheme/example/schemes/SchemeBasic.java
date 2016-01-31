@@ -16,10 +16,10 @@ import by.anatoldeveloper.hallscheme.hall.SeatListener;
 import by.anatoldeveloper.hallscheme.view.ZoomableImageView;
 
 /**
- * Created by Moneyman.ru on 05.12.2015.
- * Copyright Moneyman.ru
+ * Created by Nublo on 05.12.2015.
+ * Copyright Nublo
  */
-public class BasicSchemeFragment extends Fragment {
+public class SchemeBasic extends Fragment {
 
     @Nullable
     @Override

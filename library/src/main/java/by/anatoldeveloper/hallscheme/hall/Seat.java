@@ -1,8 +1,8 @@
 package by.anatoldeveloper.hallscheme.hall;
 
 /**
- * Created by Moneyman.ru on 28.10.2015.
- * Copyright Moneyman.ru
+ * Created by Nublo on 28.10.2015.
+ * Copyright Nublo
  */
 public interface Seat {
 

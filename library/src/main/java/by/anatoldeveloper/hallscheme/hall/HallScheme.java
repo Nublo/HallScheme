@@ -10,8 +10,11 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
 
-import by.anatoldeveloper.hallscheme.view.ZoomableImageView;
+import java.util.ArrayList;
+import java.util.List;
+
 import by.anatoldeveloper.hallscheme.R;
+import by.anatoldeveloper.hallscheme.view.ZoomableImageView;
 
 /**
  * Created by Nublo on 28.10.2015.
@@ -27,20 +30,21 @@ public class HallScheme {
     private int seatWidth, seatGap, offset;
     private int schemeBackgroundColor, unavailableSeatColor, chosenColor, sceneBackgroundColor;
     private int selectedSeats, maxSelectedSeats;
-    private Typeface robotoMedium;
+    private Typeface typeface;
     private String sceneName;
 
     private Scene scene;
     private ZoomableImageView image;
     private SeatListener listener;
     private MaxSeatsClickListener maxSeatsClickListener;
+    private List<Zone> zones;
+    private ZoneListener zoneListener;
 
     public HallScheme(ZoomableImageView image, Seat[][] seats, Context context) {
         this.selectedSeats = 0;
         this.maxSelectedSeats = -1;
         this.image = image;
         this.seats = seats;
-        this.scene = new Scene(ScenePosition.NONE, 0, 0);
         nullifyMap();
 
         image.setClickListener(new ImageClickListener() {
@@ -52,7 +56,7 @@ public class HallScheme {
             }
         });
 
-        robotoMedium = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Medium.ttf");
+        typeface = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Medium.ttf");
         sceneName = context.getString(R.string.scene);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -82,11 +86,12 @@ public class HallScheme {
         offset = 30;
         height = seats.length;
         width = seats[0].length;
+        this.scene = new Scene(ScenePosition.NONE, 0, 0, offset/2);
         image.setImageBitmap(getImageBitmap());
     }
 
     public void setScenePosition(ScenePosition position) {
-        scene = new Scene(position, width, height);
+        scene = new Scene(position, width, height, offset/2);
         image.setImageBitmap(getImageBitmap());
     }
 
@@ -142,23 +147,62 @@ public class HallScheme {
         this.maxSeatsClickListener = maxSeatsClickListener;
     }
 
+    /**
+     * Set custom typeface to scheme.
+     * Be careful when using. Bold typefaces can be drawn incorrectly.
+     * @param typeface - Typeface to be setted
+     */
+    public void setTypeface(Typeface typeface) {
+        this.typeface = typeface;
+        markerPaint.setTypeface(typeface);
+        scenePaint.setTypeface(typeface);
+        textPaint.setTypeface(typeface);
+        image.setImageBitmap(getImageBitmap());
+    }
+
+    public void setZones(List<Zone> zones) {
+        this.zones = zones;
+        image.setImageBitmap(getImageBitmap());
+    }
+
+    public void setZoneListener(ZoneListener zoneListener) {
+        this.zoneListener = zoneListener;
+    }
+
     private Paint initTextPaint(int color) {
         Paint paint = new Paint();
         paint.setColor(color);
         paint.setStyle(Paint.Style.FILL);
         paint.setStrokeMiter(0);
         paint.setTextSize(25);
-        paint.setTypeface(robotoMedium);
+        paint.setTypeface(typeface);
         return paint;
     }
 
     private void clickScheme(Point point) {
+        if (findZoneClick(point))
+            return;
         Point p = new Point(point.x - offset/2, point.y - offset/2);
         int row = p.x / (seatWidth + seatGap);
         int seat = p.y / (seatWidth + seatGap);
         if (canSeatPress(p, row, seat)) {
             clickScheme(row, seat);
         }
+    }
+
+    public boolean findZoneClick(Point p) {
+        for (Zone zone : zones) {
+            int topX = offset/2 + zone.leftTopX() * (seatWidth + seatGap);
+            int topY = offset/2 + zone.leftTopY() * (seatWidth + seatGap);
+            int bottomX = offset/2 + (zone.leftTopX() + zone.width()) * (seatWidth + seatGap) - seatGap;
+            int bottomY = offset/2 + (zone.leftTopY() + zone.height()) * (seatWidth + seatGap) - seatGap;
+            if (p.x >= topX && p.x <= bottomX && p.y >= topY && p.y <= bottomY) {
+                if (zoneListener != null)
+                    zoneListener.zoneClick(zone.id());
+                return true;
+            }
+        }
+        return false;
     }
 
     public void clickSchemeProgrammatically(int row, int seat) {
@@ -247,6 +291,19 @@ public class HallScheme {
             }
         }
 
+        for(Zone zone : zones) {
+            if (zone.width() == 0 || zone.height() == 0
+                    || zone.leftTopX() + zone.width() > width
+                    || zone.leftTopY() + zone.height() > height)
+                continue;
+            backgroundPaint.setColor(zone.color());
+            int topX = offset/2 + zone.leftTopX() * (seatWidth + seatGap) + scene.getLeftYOffset();
+            int topY = offset/2 + zone.leftTopY() * (seatWidth + seatGap) + scene.getTopXOffset();
+            int bottomX = offset/2 + (zone.leftTopX() + zone.width()) * (seatWidth + seatGap) - seatGap + scene.getLeftYOffset();
+            int bottomY = offset/2 + (zone.leftTopY() + zone.height()) * (seatWidth + seatGap) - seatGap + scene.getTopXOffset();
+            tempCanvas.drawRect(topX, topY, bottomX, bottomY, backgroundPaint);
+        }
+
         drawScene(tempCanvas);
 
         return tempBitmap;
@@ -260,7 +317,7 @@ public class HallScheme {
         int topX=0, topY=0, bottomX=0, bottomY=0;
         if (scene.position == ScenePosition.NORTH) {
             int totalWidth = width * (seatWidth + seatGap) - seatGap + offset;
-            topX = 0;
+            topX = offset / 2;
             topY = totalWidth / 2 - width * 6;
             bottomX = topX + scene.dimension;
             bottomY = topY + scene.dimensionSecond;
@@ -275,7 +332,7 @@ public class HallScheme {
         if (scene.position == ScenePosition.EAST) {
             int totalHeight = height * (seatWidth + seatGap) - seatGap + offset;
             topX = totalHeight / 2 - height * 6;
-            topY = 0;
+            topY = offset / 2;
             bottomX = topX + scene.dimensionSecond;
             bottomY = topY + scene.dimension;
         }
@@ -305,6 +362,7 @@ public class HallScheme {
     private void nullifyMap() {
         width = 0;
         height = 0;
+        zones = new ArrayList<>();
         image.setShouldOnMeasureBeCalled(true);
     }
 
@@ -323,10 +381,11 @@ public class HallScheme {
         private ScenePosition position;
         private int dimension;
         public int dimensionSecond;
-        public int width, height;
+        public int width, height, offset;
 
-        public void setScenePosition(ScenePosition position) {
+        public void setScenePosition(ScenePosition position, int offset) {
             this.position = position;
+            this.offset = offset;
             dimension = 90;
             switch (position) {
                 case NORTH:
@@ -353,36 +412,36 @@ public class HallScheme {
             }
         }
 
-        public Scene(ScenePosition position, int width, int height) {
+        public Scene(ScenePosition position, int width, int height, int offset) {
             this.width = width;
             this.height = height;
-            setScenePosition(position);
+            setScenePosition(position, offset);
         }
 
         public int getTopXOffset() {
             if (position == ScenePosition.NORTH) {
-                return dimension;
+                return dimension + offset;
             }
             return 0;
         }
 
         public int getLeftYOffset() {
             if (position == ScenePosition.EAST) {
-                return dimension;
+                return dimension + offset;
             }
             return 0;
         }
 
         public int getBottomXOffset() {
             if (position == ScenePosition.SOUTH) {
-                return dimension;
+                return dimension + offset;
             }
             return 0;
         }
 
         public int getRightYOffset() {
             if (position == ScenePosition.WEST) {
-                return dimension;
+                return dimension + offset;
             }
             return 0;
         }

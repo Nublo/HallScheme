@@ -14,10 +14,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import by.anatoldeveloper.hallscheme.example.schemes.BasicSchemeFragment;
+import by.anatoldeveloper.hallscheme.example.schemes.SchemeBasic;
+import by.anatoldeveloper.hallscheme.example.schemes.SchemeCustomTypeface;
 import by.anatoldeveloper.hallscheme.example.schemes.SchemeDarkTheme;
-import by.anatoldeveloper.hallscheme.example.schemes.SchemeWithMarkersFragment;
-import by.anatoldeveloper.hallscheme.example.schemes.SchemeWithSceneFragment;
+import by.anatoldeveloper.hallscheme.example.schemes.SchemeMaxSelectedSeats;
+import by.anatoldeveloper.hallscheme.example.schemes.SchemeWithMarkers;
+import by.anatoldeveloper.hallscheme.example.schemes.SchemeWithScene;
+import by.anatoldeveloper.hallscheme.example.schemes.SchemeWithZones;
 
 /**
  * Created by Nublo on 06.12.2015.
@@ -58,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
 
     public static class ListFragment extends Fragment {
 
-        private static final String[] halls = {"Basic hall scheme", "Scheme with scene", "Scheme with markers", "Custom colors scheme"};
+        private static final String[] halls = {"Basic hall scheme", "Scheme with scene", "Scheme with markers",
+                "Custom colors scheme", "Custom typeface", "Maximum selected seats", "Scheme with zones"};
 
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.halls_fragment, container, false);
@@ -71,16 +75,25 @@ public class MainActivity extends AppCompatActivity {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     switch (position) {
                         case 0 :
-                            replaceFragmentAndAddToBackStack(new BasicSchemeFragment());
+                            replaceFragmentAndAddToBackStack(new SchemeBasic());
                             break;
                         case 1 :
-                            replaceFragmentAndAddToBackStack(new SchemeWithSceneFragment());
+                            replaceFragmentAndAddToBackStack(new SchemeWithScene());
                             break;
                         case 2 :
-                            replaceFragmentAndAddToBackStack(new SchemeWithMarkersFragment());
+                            replaceFragmentAndAddToBackStack(new SchemeWithMarkers());
                             break;
                         case 3 :
                             replaceFragmentAndAddToBackStack(new SchemeDarkTheme());
+                            break;
+                        case 4 :
+                            replaceFragmentAndAddToBackStack(new SchemeCustomTypeface());
+                            break;
+                        case 5 :
+                            replaceFragmentAndAddToBackStack(new SchemeMaxSelectedSeats());
+                            break;
+                        case 6 :
+                            replaceFragmentAndAddToBackStack(new SchemeWithZones());
                             break;
                     }
                 }

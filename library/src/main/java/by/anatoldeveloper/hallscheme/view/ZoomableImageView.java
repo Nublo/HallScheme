@@ -2,6 +2,7 @@ package by.anatoldeveloper.hallscheme.view;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Point;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 
+import by.anatoldeveloper.hallscheme.R;
 import by.anatoldeveloper.hallscheme.hall.ImageClickListener;
 
 /**
@@ -54,10 +56,17 @@ public class ZoomableImageView extends ImageView {
     private int onMeasure = 0;
 
     private ImageClickListener listener;
+    private boolean zoomByDoubleTap;
 
     public ZoomableImageView(Context context, AttributeSet attr)
     {
         super(context, attr);
+        TypedArray a = context.getTheme().obtainStyledAttributes(attr, R.styleable.ZoomableImageView, 0, 0);
+        try {
+            zoomByDoubleTap = a.getBoolean(R.styleable.ZoomableImageView_doubleTap, true);
+        } finally {
+            a.recycle();
+        }
         super.setClickable(true);
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
         mGestureDetector = new GestureDetector(context, new GestureListener());
@@ -164,6 +173,10 @@ public class ZoomableImageView extends ImageView {
 
     public void setClickListener(ImageClickListener listener) {
         this.listener = listener;
+    }
+
+    public void setZoomByDoubleTap(boolean zoomByDoubleTap) {
+        this.zoomByDoubleTap = zoomByDoubleTap;
     }
 
     @Override
@@ -289,7 +302,8 @@ public class ZoomableImageView extends ImageView {
 
         @Override
         public boolean onDoubleTap( MotionEvent e ) {
-            zoom(true);
+            if (zoomByDoubleTap)
+                zoom(true);
             return false;
         }
 
