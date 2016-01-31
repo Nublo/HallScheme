@@ -21,7 +21,7 @@ HallScheme is a lightweight simple library for creating rectangle halls.
 
 ```groovy
 dependencies {
-    compile 'com.github.Nublo:hallscheme:1.0.1'
+    compile 'com.github.Nublo:hallscheme:1.1.0'
 }
 ```
 
