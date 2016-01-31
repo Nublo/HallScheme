@@ -253,11 +253,11 @@ Image is currently drawing on standart `Bitmap`. Maximum size of `Bitmap` depend
 
 ### ChangeLog
 
-**Version 1.0.1:**
+**Version 1.1.0:**
 
 + Ability to set custom typeface
 + Disable zooming by double tap
-+ Programmaticaly click seat on scheme
++ Programmatically click seat on scheme
 + Limiting checked seats
 + Added seat areas
 
