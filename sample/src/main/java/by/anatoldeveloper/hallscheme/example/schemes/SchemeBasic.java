@@ -19,7 +19,7 @@ import by.anatoldeveloper.hallscheme.view.ZoomableImageView;
  * Created by Nublo on 05.12.2015.
  * Copyright Nublo
  */
-public class BasicSchemeFragment extends Fragment {
+public class SchemeBasic extends Fragment {
 
     @Nullable
     @Override

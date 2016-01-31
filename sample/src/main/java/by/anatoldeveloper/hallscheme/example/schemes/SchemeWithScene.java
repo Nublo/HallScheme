@@ -21,7 +21,7 @@ import by.anatoldeveloper.hallscheme.view.ZoomableImageView;
  * Created by Nublo on 05.12.2015.
  * Copyright Nublo
  */
-public class SchemeWithSceneFragment extends Fragment {
+public class SchemeWithScene extends Fragment {
 
     @Nullable
     @Override
