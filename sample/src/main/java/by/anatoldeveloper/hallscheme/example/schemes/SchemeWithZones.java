@@ -9,19 +9,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import by.anatoldeveloper.hallscheme.example.R;
 import by.anatoldeveloper.hallscheme.example.SeatExample;
+import by.anatoldeveloper.hallscheme.example.ZoneExample;
 import by.anatoldeveloper.hallscheme.hall.HallScheme;
 import by.anatoldeveloper.hallscheme.hall.ScenePosition;
 import by.anatoldeveloper.hallscheme.hall.Seat;
 import by.anatoldeveloper.hallscheme.hall.SeatListener;
+import by.anatoldeveloper.hallscheme.hall.Zone;
+import by.anatoldeveloper.hallscheme.hall.ZoneListener;
 import by.anatoldeveloper.hallscheme.view.ZoomableImageView;
 
 /**
- * Created by Nublo on 05.12.2015.
+ * Created by Nublo on 31.01.2016.
  * Copyright Nublo
  */
-public class SchemeWithSceneFragment extends Fragment {
+public class SchemeWithZones extends Fragment {
 
     @Nullable
     @Override
@@ -43,61 +49,62 @@ public class SchemeWithSceneFragment extends Fragment {
             }
 
         });
+        scheme.setZones(zones());
+        scheme.setZoneListener(new ZoneListener() {
+            @Override
+            public void zoneClick(int id) {
+                Toast.makeText(getActivity(), "Zone click " + id, Toast.LENGTH_SHORT).show();
+            }
+        });
         return rootView;
     }
 
     public Seat[][] schemeWithScene() {
-        Seat seats[][] = new Seat[16][29];
+        Seat seats[][] = new Seat[23][26];
         int k = 0;
-        for (int i = 0; i < 16; i++)
-            for(int j = 0; j < 29; j++) {
+        for (int i = 0; i < 23; i++)
+            for(int j = 0; j < 26; j++) {
                 SeatExample seat = new SeatExample();
                 seat.id = ++k;
                 seat.selectedSeatMarker = String.valueOf(j+1);
                 seat.status = HallScheme.SeatStatus.EMPTY;
                 seats[i][j] = seat;
-                if (i < 5 && j < 4) {
+                if (i == 22 && (j < 5 || j > 20)) {
                     seat.status = HallScheme.SeatStatus.BUSY;
-                    if (i < 4) {
-                        seat.status = HallScheme.SeatStatus.FREE;
-                        seat.color = Color.argb(255, 60, 179, 113);
-                    }
                 }
-                if (j > 1 && j < 5 && i > 4) {
+                if (i == 21 && (j < 6 || j > 19)) {
                     seat.status = HallScheme.SeatStatus.BUSY;
-                    if (i > 13) {
-                        seat.status = HallScheme.SeatStatus.FREE;
-                        seat.color = Color.argb(255, 148, 51, 145);
-                    }
                 }
-                if (j == 4 && i > 1 && i < 5)
+                if (i == 20 && (j < 7 || j > 18)) {
                     seat.status = HallScheme.SeatStatus.BUSY;
-                if (i < 5 && j > 24) {
-                    seat.status = HallScheme.SeatStatus.BUSY;
-                    if (i < 4) {
-                        seat.status = HallScheme.SeatStatus.FREE;
-                        seat.color = Color.argb(255, 60, 179, 113);
-                    }
                 }
-                if (j > 23 && j < 27 && i > 4) {
+                if (i > 16 && i < 21 && (j < 7 || j > 18)) {
                     seat.status = HallScheme.SeatStatus.BUSY;
-                    if (i > 13) {
-                        seat.status = HallScheme.SeatStatus.FREE;
-                        seat.color = Color.argb(255, 148, 51, 145);
-                    }
                 }
-                if (j == 24 && i > 1 && i < 5)
+                if (i > 7 && i < 16 && (j < 6 || j > 19)) {
                     seat.status = HallScheme.SeatStatus.BUSY;
-                if (i > 3 && j > 6 && j < 22) {
+                }
+                if (i == 4 && (j < 5 || j > 20)) {
                     seat.status = HallScheme.SeatStatus.BUSY;
-                    if (i > 13) {
-                        seat.status = HallScheme.SeatStatus.FREE;
-                        seat.color = Color.argb(255, 43, 108, 196);
-                    }
+                }
+                if (i > 4 && i < 8 && (j < 3 || j > 22)) {
+                    seat.status = HallScheme.SeatStatus.FREE;
+                    seat.color = Color.GREEN;
                 }
 
             }
         return seats;
+    }
+
+    public List<Zone> zones() {
+        List<Zone> zones = new ArrayList<>();
+        ZoneExample zone1 = new ZoneExample(1, 8, 17, 10, 6, getActivity().getResources().getColor(R.color.dark_green), "Not used in current version");
+        ZoneExample zone2 = new ZoneExample(2, 8, 4, 10, 12, Color.DKGRAY, "Not used in current version");
+        ZoneExample zone3 = new ZoneExample(3, 0, 0, 26, 2, getActivity().getResources().getColor(R.color.dark_purple), "Not used in current version");
+        zones.add(zone1);
+        zones.add(zone2);
+        zones.add(zone3);
+        return zones;
     }
 
 }

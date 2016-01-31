@@ -2,4 +2,7 @@
     <string name="app_name">HallScheme</string>
     <string name="custom_name">Custom name</string>
     <string name="github_menu">View on github</string>
+    <string name="double_tap_enabled">Double tap enabled</string>
+    <string name="double_tap_disabled">Double tap disabled</string>
+    <string name="programmatically_click">Programmatically click</string>
 </resources>

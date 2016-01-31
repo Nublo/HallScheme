@@ -1,7 +1,6 @@
 package by.anatoldeveloper.hallscheme.example.schemes;
 
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,38 +13,24 @@ import android.widget.Toast;
 import by.anatoldeveloper.hallscheme.example.R;
 import by.anatoldeveloper.hallscheme.example.SeatExample;
 import by.anatoldeveloper.hallscheme.hall.HallScheme;
+import by.anatoldeveloper.hallscheme.hall.MaxSeatsClickListener;
 import by.anatoldeveloper.hallscheme.hall.ScenePosition;
 import by.anatoldeveloper.hallscheme.hall.Seat;
 import by.anatoldeveloper.hallscheme.hall.SeatListener;
 import by.anatoldeveloper.hallscheme.view.ZoomableImageView;
 
 /**
- * Created by Nublo on 03.01.2016.
+ * Created by Nublo on 30.01.2016.
  * Copyright Nublo
  */
-public class SchemeCustomTypeface extends Fragment {
-
-    boolean doubleTap = false;
+public class SchemeMaxSelectedSeats extends Fragment {
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.scheme_with_button, container, false);
-        final ZoomableImageView imageView = (ZoomableImageView) rootView.findViewById(R.id.zoomable_image);
-        final Button zoomButton = (Button) rootView.findViewById(R.id.scheme_button);
-        zoomButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                doubleTap = !doubleTap;
-                imageView.setZoomByDoubleTap(doubleTap);
-                if (doubleTap) {
-                    zoomButton.setText(getString(R.string.double_tap_enabled));
-                } else {
-                    zoomButton.setText(getString(R.string.double_tap_disabled));
-                }
-            }
-        });
-        HallScheme scheme = new HallScheme(imageView, basicScheme(), getActivity());
+        ZoomableImageView imageView = (ZoomableImageView) rootView.findViewById(R.id.zoomable_image);
+        final HallScheme scheme = new HallScheme(imageView, basicScheme(), getActivity());
         scheme.setScenePosition(ScenePosition.NORTH);
         scheme.setSeatListener(new SeatListener() {
 
@@ -60,7 +45,21 @@ public class SchemeCustomTypeface extends Fragment {
             }
 
         });
-        scheme.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/DroidSansMono.ttf"));
+        scheme.setMaxSelectedSeats(5);
+        scheme.setMaxSeatsClickListener(new MaxSeatsClickListener() {
+            @Override
+            public void maxSeatsReached(int id) {
+                Toast.makeText(getActivity(), "Maximum selected seat limit reached", Toast.LENGTH_SHORT).show();
+            }
+        });
+        Button clickButton = (Button) rootView.findViewById(R.id.scheme_button);
+        clickButton.setText(getString(R.string.programmatically_click));
+        clickButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                scheme.clickSchemeProgrammatically(1, 1);
+            }
+        });
         return rootView;
     }
 
