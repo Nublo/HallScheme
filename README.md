@@ -21,7 +21,7 @@ HallScheme is a lightweight simple library for creating rectangle halls.
 
 ```groovy
 dependencies {
-    compile 'com.github.Nublo:hallscheme:1.1.0'
+    compile 'com.github.Nublo:hallscheme:1.1.1'
 }
 ```
 
@@ -252,6 +252,10 @@ You can see how to use seat areas in examples. Main principle like with seats. Y
 Image is currently drawing on standart `Bitmap`. Maximum size of `Bitmap` depends on underlying OpenGL implementation and it varies depending on device. It shouldn't be less then `2048x2048`. With current implementation your hall dimension(either rows or columns) shouldn't be more then `58`. Maximum scheme that can be drawn is `58x58`. Of course, if you know that devices using your app will have bigger maximum size - you can draw larger schemes.
 
 ### ChangeLog
+
+**Version 1.1.1:**
+
++ Remove dependency from appcompat library
 
 **Version 1.1.0:**
 
